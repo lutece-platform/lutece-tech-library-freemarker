@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<title>Library FreeMarker</title>
+	</properties>
+	<body>
+		<section name="Library FreeMarker">
+			<subsection name="Introduction">
+				<p>
+					This library provides the FreeMarker service.
+				</p>
+			</subsection>
+		</section>
+	</body>
+</document>
