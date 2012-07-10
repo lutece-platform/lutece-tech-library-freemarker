@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>lutece-global-pom</artifactId>
+        <artifactId>lutece-library-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>1.8</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.paris.lutece.plugins</groupId>
@@ -14,8 +14,7 @@
 	<properties>
 		<jiraProjectName>LIBRARYFREEMARKER</jiraProjectName>
 		<jiraComponentId>10678</jiraComponentId>
-		<serverUrl>dev.lutece.paris.fr</serverUrl>
-		<sonar.host.url>http://${serverUrl}/sonar</sonar.host.url>
+		<sonar.host.url>http://dev.lutece.paris.fr/sonar</sonar.host.url>
 		<freemarker.version>2.3.18</freemarker.version>
 		<log4j.version>1.2.14</log4j.version>
 	</properties>
@@ -24,7 +23,7 @@
         <repository>
             <id>luteceSnapshot</id>
             <name>luteceSnapshot</name>
-            <url>http://${serverUrl}/snapshot_repository</url>
+            <url>http://dev.lutece.paris.fr/snapshot_repository</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -32,7 +31,7 @@
         <repository>
             <id>lutece</id>
             <name>luteceRepository</name>
-            <url>http://${serverUrl}/maven_repository</url>
+            <url>http://dev.lutece.paris.fr/maven_repository</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -52,169 +51,6 @@
 			<version>${log4j.version}</version>
 		</dependency>
     </dependencies>
-    
-    <build>
-    	<sourceDirectory>src/java</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                    <exclude>**/.svn/**</exclude>
-                </excludes>
-            </resource>
-        </resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jalopy-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
-                <configuration>
-                    <convention>lutece-parent-pom/jalopy_mdp.xml</convention>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>fr.paris.lutece.tools</groupId>
-                <artifactId>maven-lutece-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <localConfDirectory>${localConfDirectory}</localConfDirectory>
-                </configuration>
-            </plugin>
-		</plugins>
-		<extensions>
-            <extension>
-                <groupId>fr.paris.lutece.tools</groupId>
-                <artifactId>build-tools</artifactId>
-                <version>0.11</version>
-            </extension>
-        </extensions>
-        <pluginManagement>
-      		<plugins>
-				<plugin>
-		          <groupId>org.apache.maven.plugins</groupId>
-		          <artifactId>maven-checkstyle-plugin</artifactId>
-		          <version>2.3</version>
-		        </plugin>
-		        <plugin>
-		          <groupId>org.codehaus.mojo</groupId>
-		          <artifactId>findbugs-maven-plugin</artifactId>
-		          <version>2.3.1</version>
-		          <configuration>
-		              <xmlOutput>true</xmlOutput>
-		              <threshold>Normal</threshold>
-		              <effort>Max</effort>
-		          </configuration>
-		        </plugin>
-			</plugins>
-    	</pluginManagement>
-	</build>
-	<reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.3</version>
-                <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>728m</maxmemory>
-                    <configLocation>lutece-parent-pom/lutece_checks.xml</configLocation>
-                    <headerLocation>lutece-parent-pom/checkstyle-header.txt</headerLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>512m</maxmemory>
-                    <targetJdk>1.6</targetJdk>
-                    <rulesets>
-                        <ruleset>lutece-parent-pom/lutece_PMD.xml</ruleset>
-                    </rulesets>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jdepend-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-changelog-plugin</artifactId>
-                <reportSets>
-                    <reportSet>
-                        <id>dual-report</id>
-                        <configuration>
-                            <type>range</type>
-                            <range>30</range>
-                        </configuration>
-                        <reports>
-                            <report>changelog</report>
-                            <report>file-activity</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>taglist-maven-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-					<tags>
-						<tag>TODO</tag>
-						<tag>FIXME</tag>
-						<tag>@todo</tag>
-						<tag>@deprecated</tag>
-						<tag>DOCUMENT_ME</tag>
-						<tag>NOT_YET_DOCUMENTED</tag>
-					</tags>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javancss-maven-plugin</artifactId>
-                <version>2.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <configuration>
-                    <instrumentation>
-                        <ignores>
-                            <ignore>fr.paris.lutece.portal.web.constants.*</ignore>
-                        </ignores>
-                    </instrumentation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-            </plugin>
-			<plugin>
-		        <groupId>org.codehaus.mojo</groupId>
-		        <artifactId>dashboard-maven-plugin</artifactId>
-				<version>1.0.0-beta-1</version>
-		    </plugin>    
-		    <plugin>
-				<groupId>org.codehaus.sonar-plugins</groupId>
-				<artifactId>maven-report</artifactId>
-			</plugin>
-        </plugins>
-    </reporting>
     
     <scm>
         <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/library/library-freemarker</connection>
