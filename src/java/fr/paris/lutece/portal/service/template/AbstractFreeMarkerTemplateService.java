@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -70,6 +71,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
     /** the list contains plugins specific macros */
     private static final List<String> _listPluginsMacros = new ArrayList<String>(  );
+    private static final Map<String, Object> _mapSharedVariables = new HashMap<String, Object>(  );
     private static Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>(  );
     private static String _strDefaultPath;
     private static int _nTemplateUpdateDelay;
@@ -91,6 +93,15 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     public void addPluginMacros( String strFileName )
     {
         _listPluginsMacros.add( strFileName );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+	public void setSharedVariable(String name, Object obj)
+    {
+    	_mapSharedVariables.put(name, obj);
     }
 
     /**
@@ -140,6 +151,11 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
                     {
                         cfg.addAutoInclude( strFileName );
                     }
+                }
+                
+                for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
+                {
+                	cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
                 }
 
                 // disable the localized look-up process to find a template

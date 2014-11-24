@@ -70,6 +70,13 @@ public interface IFreeMarkerTemplateService
      * @param strFileName the filename
      */
     void addPluginMacros( String strFileName );
+    
+    /**
+     * Add a shared variable into every template
+     * @param name name of the shared variable
+     * @param obj value
+     */
+    void setSharedVariable( String name, Object obj);
 
     /**
      * Initializes the service with the templates's path
