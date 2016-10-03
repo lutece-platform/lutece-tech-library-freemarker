@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>library-freemarker</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.0</version>
     <name>Library FreeMaker</name>
     <description>FreeMarker library</description>
     
@@ -56,5 +56,6 @@
         <connection>scm:git:https://github.com/lutece-platform/lutece-tech-library-freemarker.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-tech-library-freemarker.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-tech-library-freemarker.git</url>
-    </scm>
+      <tag>lutece-tech-library-freemarker-1.2.0</tag>
+  </scm>
 </project>
