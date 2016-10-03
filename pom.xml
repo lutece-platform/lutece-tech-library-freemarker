@@ -15,7 +15,7 @@
 		<jiraProjectName>LIBRARYFREEMARKER</jiraProjectName>
 		<jiraComponentId>10678</jiraComponentId>
 		<sonar.host.url>http://dev.lutece.paris.fr/sonar</sonar.host.url>
-		<freemarker.version>2.3.21</freemarker.version>
+		<freemarker.version>2.3.25-incubating</freemarker.version>
 		<log4j.version>1.2.14</log4j.version>
 	</properties>
 	
