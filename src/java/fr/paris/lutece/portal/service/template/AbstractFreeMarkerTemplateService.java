@@ -219,6 +219,11 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
                 cfg.addAutoInclude( strFileName );
             }
 
+            for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
+            {
+                cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
+            }
+
             // disable the localized look-up process to find a template
             cfg.setLocalizedLookup( false );
 
