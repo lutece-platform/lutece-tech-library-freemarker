@@ -2,7 +2,7 @@
     <parent>
         <artifactId>lutece-global-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>3.0.11</version>
+        <version>4.0.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.paris.lutece.plugins</groupId>
@@ -11,13 +11,10 @@
     <name>Library FreeMaker</name>
     <description>FreeMarker library</description>
     
-	<properties>
-		<jiraProjectName>LIBRARYFREEMARKER</jiraProjectName>
-		<jiraComponentId>10678</jiraComponentId>
-		<sonar.host.url>http://dev.lutece.paris.fr/sonar</sonar.host.url>
-		<freemarker.version>2.3.25-incubating</freemarker.version>
-		<log4j.version>1.2.14</log4j.version>
-	</properties>
+    <properties>
+        <jiraProjectName>LIBRARYFREEMARKER</jiraProjectName>
+        <jiraComponentId>10678</jiraComponentId>
+    </properties>
 	
     <repositories>
         <repository>
@@ -39,23 +36,23 @@
     </repositories>
 	
     <dependencies>
-    	<dependency>
+        <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>${freemarker.version}</version>
+            <version>2.3.28</version>
         </dependency>
         <!-- Log4j -->
         <dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
     </dependencies>
     
     <scm>
         <connection>scm:git:https://github.com/lutece-platform/lutece-tech-library-freemarker.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-tech-library-freemarker.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-tech-library-freemarker.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 </project>
