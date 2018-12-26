@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,6 @@ import java.text.SimpleDateFormat;
 
 import java.util.Locale;
 
-
 /**
  * This class represents an HTML template that may include bookmarks that can be substitute by values.
  *
@@ -60,14 +59,15 @@ public class HtmlTemplate
     /**
      * Constructor 1
      */
-    public HtmlTemplate(  )
+    public HtmlTemplate( )
     {
     }
 
     /**
      * Constructor 2
      *
-     * @param strTemplate The template as a string
+     * @param strTemplate
+     *            The template as a string
      */
     public HtmlTemplate( String strTemplate )
     {
@@ -77,54 +77,61 @@ public class HtmlTemplate
     /**
      * Constructor 3
      *
-     * @param template Copy constructor based on another template.
+     * @param template
+     *            Copy constructor based on another template.
      */
     public HtmlTemplate( HtmlTemplate template )
     {
-        _strTemplate = template.getHtml(  );
+        _strTemplate = template.getHtml( );
     }
 
     /**
      * Load the template from a file
      *
-     * @param strFilename The file name to load
-     * @throws IOException  If an error occured
+     * @param strFilename
+     *            The file name to load
+     * @throws IOException
+     *             If an error occured
      */
     public void load( String strFilename ) throws IOException
     {
         FileReader fr = new FileReader( strFilename );
         BufferedReader in = new BufferedReader( fr );
         String strLine;
-        _strTemplate = "";
+        StringBuilder sbContent = new StringBuilder( );
 
-        while ( ( strLine = in.readLine(  ) ) != null )
+        while ( ( strLine = in.readLine( ) ) != null )
         {
-            _strTemplate += ( strLine + "\r\n" );
+            sbContent.append( strLine ).append( "\r\n" );
         }
+        _strTemplate = sbContent.toString( );
 
-        in.close(  );
+        in.close( );
     }
 
     /**
      * Load the template from an InputStream
      *
-     * @param is The open InputStream that point on the template
-     * @throws IOException If an error occured
+     * @param is
+     *            The open InputStream that point on the template
+     * @throws IOException
+     *             If an error occured
      */
     public void load( InputStream is ) throws IOException
     {
         InputStreamReader fr = new InputStreamReader( is );
         BufferedReader in = new BufferedReader( fr );
         String strLine;
-        _strTemplate = "";
+        StringBuilder sbContent = new StringBuilder( );
 
-        while ( ( strLine = in.readLine(  ) ) != null )
+        while ( ( strLine = in.readLine( ) ) != null )
         {
-            _strTemplate += ( strLine + "\r\n" );
+            sbContent.append( strLine ).append( "\r\n" );
         }
+        _strTemplate = sbContent.toString( );
 
-        in.close(  );
-        is.close(  );
+        in.close( );
+        is.close( );
     }
 
     /**
@@ -132,7 +139,7 @@ public class HtmlTemplate
      *
      * @return The template as a string.
      */
-    public String getHtml(  )
+    public String getHtml( )
     {
         return _strTemplate;
     }
@@ -140,8 +147,10 @@ public class HtmlTemplate
     /**
      * Substitute each appearance of a bookmark by a given value.
      *
-     * @param strBookmark The bookmark that must be present in the template.
-     * @param strValue The value to substitute as a String.
+     * @param strBookmark
+     *            The bookmark that must be present in the template.
+     * @param strValue
+     *            The value to substitute as a String.
      */
     public void substitute( String strBookmark, String strValue )
     {
@@ -151,8 +160,10 @@ public class HtmlTemplate
     /**
      * Substitute each appearance of a bookmark by a given value.
      *
-     * @param strBookmark The bookmark that must be present in the template.
-     * @param nValue The value to substitute as an integer.
+     * @param strBookmark
+     *            The bookmark that must be present in the template.
+     * @param nValue
+     *            The value to substitute as an integer.
      */
     public void substitute( String strBookmark, int nValue )
     {
@@ -163,8 +174,10 @@ public class HtmlTemplate
     /**
      * Substitute each appearance of a bookmark by a given value.
      *
-     * @param strBookmark The bookmark that must be present in the template.
-     * @param date The value to substitute as a Date.
+     * @param strBookmark
+     *            The bookmark that must be present in the template.
+     * @param date
+     *            The value to substitute as a Date.
      */
     public void substitute( String strBookmark, java.sql.Date date )
     {
@@ -175,8 +188,10 @@ public class HtmlTemplate
     /**
      * Substitute each occurence of a bookmark by a given value.
      *
-     * @param strBookmark The bookmark that must be present in the template.
-     * @param date The value to substitute as a Timestamp.
+     * @param strBookmark
+     *            The bookmark that must be present in the template.
+     * @param date
+     *            The value to substitute as a Timestamp.
      */
     public void substitute( String strBookmark, java.sql.Timestamp date )
     {
@@ -186,7 +201,9 @@ public class HtmlTemplate
 
     /**
      * Converts a date value to a String date
-     * @param date The date
+     * 
+     * @param date
+     *            The date
      * @return The formatted string
      */
     private static String getDateString( java.util.Date date )
@@ -194,10 +211,10 @@ public class HtmlTemplate
         if ( date != null )
         {
             SimpleDateFormat formatter = new SimpleDateFormat( "dd'/'MM'/'yyyy", Locale.FRANCE );
-            StringBuffer strDate = new StringBuffer(  );
+            StringBuffer strDate = new StringBuffer( );
             formatter.format( date, strDate, new FieldPosition( 0 ) );
 
-            return strDate.toString(  );
+            return strDate.toString( );
         }
 
         return "";
@@ -206,14 +223,17 @@ public class HtmlTemplate
     /**
      * This function substitutes all occurences of a given bookmark by a given value
      *
-     * @param strSource The input string that contains bookmarks to replace
-     * @param strValue    The value to substitute to the bookmark
-     * @param strBookmark    The bookmark name
+     * @param strSource
+     *            The input string that contains bookmarks to replace
+     * @param strValue
+     *            The value to substitute to the bookmark
+     * @param strBookmark
+     *            The bookmark name
      * @return The output string.
      */
     private static String substitute( String strSource, String strValue, String strBookmark )
     {
-        StringBuffer strResult = new StringBuffer(  );
+        StringBuilder strResult = new StringBuilder( );
         int nPos = strSource.indexOf( strBookmark );
         String strModifySource = strSource;
 
@@ -221,12 +241,12 @@ public class HtmlTemplate
         {
             strResult.append( strModifySource.substring( 0, nPos ) );
             strResult.append( strValue );
-            strModifySource = strModifySource.substring( nPos + strBookmark.length(  ) );
+            strModifySource = strModifySource.substring( nPos + strBookmark.length( ) );
             nPos = strModifySource.indexOf( strBookmark );
         }
 
         strResult.append( strModifySource );
 
-        return strResult.toString(  );
+        return strResult.toString( );
     }
 }

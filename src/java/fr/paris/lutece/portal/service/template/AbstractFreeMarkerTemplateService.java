@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 /**
  *
  * Template service based on the Freemarker template engine
@@ -70,9 +69,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private static final String SETTING_DATE_FORMAT = "date_format";
 
     /** the list contains plugins specific macros */
-    private static final List<String> _listPluginsMacros = new ArrayList<String>(  );
-    private static final Map<String, Object> _mapSharedVariables = new HashMap<String, Object>(  );
-    private static Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>(  );
+    private static final List<String> _listPluginsMacros = new ArrayList<String>( );
+    private static final Map<String, Object> _mapSharedVariables = new HashMap<String, Object>( );
+    private static Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>( );
     private static String _strDefaultPath;
     private static int _nTemplateUpdateDelay;
     private static Logger _logger = Logger.getLogger( "lutece.freemarker" );
@@ -99,9 +98,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      * {@inheritDoc}
      */
     @Override
-	public void setSharedVariable(String name, Object obj)
+    public void setSharedVariable( String name, Object obj )
     {
-    	_mapSharedVariables.put(name, obj);
+        _mapSharedVariables.put( name, obj );
     }
 
     /**
@@ -136,7 +135,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
             if ( cfg == null )
             {
-                cfg = new Configuration(  );
+                cfg = new Configuration( );
 
                 // set the root directory for template loading
                 File directory = new File( this.getAbsolutePathFromRelativePath( strPath ) );
@@ -152,10 +151,10 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
                         cfg.addAutoInclude( strFileName );
                     }
                 }
-                
+
                 for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
                 {
-                	cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
+                    cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
                 }
 
                 // disable the localized look-up process to find a template
@@ -166,23 +165,23 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
                 _mapConfigurations.put( strPath, cfg );
 
-                //Used to set the default format to display a date and datetime
+                // Used to set the default format to display a date and datetime
                 cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
 
-                //WARNING : the Datetime format is defined as the date format, i.e. the hours and minutes will not be displayed
-                //        	cfg.setSetting( SETTING_DATETIME_FORMAT, DateUtil.getDefaultPattern( locale ) );
+                // WARNING : the Datetime format is defined as the date format, i.e. the hours and minutes will not be displayed
+                // cfg.setSetting( SETTING_DATETIME_FORMAT, DateUtil.getDefaultPattern( locale ) );
 
                 // Time in seconds that must elapse before checking whether there is a newer version of a template file
                 cfg.setTemplateUpdateDelay( _nTemplateUpdateDelay );
             }
         }
-        catch ( IOException e )
+        catch( IOException e )
         {
-            _logger.error( e.getMessage(  ), e );
+            _logger.error( e.getMessage( ), e );
         }
-        catch ( TemplateException e )
+        catch( TemplateException e )
         {
-            throw new RuntimeException( e.getMessage(  ) );
+            throw new RuntimeException( e.getMessage( ) );
         }
 
         return processTemplate( cfg, strTemplate, rootMap, locale );
@@ -199,15 +198,17 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
         try
         {
-            cfg = new Configuration(  );
+            cfg = new Configuration( );
 
             // set the root directory for template loading
             File directory = new File( this.getAbsolutePathFromRelativePath( _strDefaultPath ) );
             FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
-            StringTemplateLoader stringLoader = new StringTemplateLoader(  );
+            StringTemplateLoader stringLoader = new StringTemplateLoader( );
             stringLoader.putTemplate( STRING_TEMPLATE_LOADER_NAME, strTemplateData );
 
-            TemplateLoader[] loaders = new TemplateLoader[] { ftl1, stringLoader };
+            TemplateLoader [ ] loaders = new TemplateLoader [ ] {
+                    ftl1, stringLoader
+            };
             MultiTemplateLoader mtl = new MultiTemplateLoader( loaders );
 
             cfg.setTemplateLoader( mtl );
@@ -230,19 +231,15 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
             // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
             cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
 
-            //Used to set the default format to display a date and datetime
+            // Used to set the default format to display a date and datetime
             cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
 
             // Time in seconds that must elapse before checking whether there is a newer version of a template file
             cfg.setTemplateUpdateDelay( _nTemplateUpdateDelay );
         }
-        catch ( IOException e )
+        catch( IOException | TemplateException e )
         {
-            _logger.error( e.getMessage(  ), e );
-        }
-        catch ( TemplateException e )
-        {
-            _logger.error( e.getMessage(  ), e );
+            _logger.error( e.getMessage( ), e );
         }
 
         return processTemplate( cfg, STRING_TEMPLATE_LOADER_NAME, rootMap, locale );
@@ -252,29 +249,34 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      * {@inheritDoc}
      */
     @Override
-    public void resetConfiguration(  )
+    public void resetConfiguration( )
     {
-        _mapConfigurations = new HashMap<String, Configuration>(  );
+        _mapConfigurations = new HashMap<String, Configuration>( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void resetCache(  )
+    public void resetCache( )
     {
-        for ( Configuration cfg : _mapConfigurations.values(  ) )
+        for ( Configuration cfg : _mapConfigurations.values( ) )
         {
-            cfg.clearTemplateCache(  );
+            cfg.clearTemplateCache( );
         }
     }
 
     /**
      * Process the template transformation and return the {@link HtmlTemplate}
-     * @param cfg The Freemarker configuration to use
-     * @param strTemplate The template name to call
-     * @param rootMap The HashMap model
-     * @param locale The {@link Locale}
+     * 
+     * @param cfg
+     *            The Freemarker configuration to use
+     * @param strTemplate
+     *            The template name to call
+     * @param rootMap
+     *            The HashMap model
+     * @param locale
+     *            The {@link Locale}
      * @return The {@link HtmlTemplate}
      */
     private HtmlTemplate processTemplate( Configuration cfg, String strTemplate, Object rootMap, Locale locale )
@@ -295,19 +297,19 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
             }
 
             StringWriter writer = new StringWriter( 1024 );
-            //Used to set the default format to display a date and datetime
+            // Used to set the default format to display a date and datetime
             ftl.setDateFormat( this.getDefaultPattern( locale ) );
 
             ftl.process( rootMap, writer );
-            template = new HtmlTemplate( writer.toString(  ) );
+            template = new HtmlTemplate( writer.toString( ) );
         }
-        catch ( IOException e )
+        catch( IOException e )
         {
-            _logger.error( e.getMessage(  ), e );
+            _logger.error( e.getMessage( ), e );
         }
-        catch ( TemplateException e )
+        catch( TemplateException e )
         {
-            throw new RuntimeException( e.getMessage(  ) );
+            throw new RuntimeException( e.getMessage( ) );
         }
 
         return template;

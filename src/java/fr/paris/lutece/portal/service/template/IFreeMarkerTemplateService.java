@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2019, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 
 import java.util.Locale;
 
-
 /**
  *
  * IFreeMarkerTemplateService
@@ -47,70 +46,94 @@ public interface IFreeMarkerTemplateService
 {
     /**
      * Get the absolute path from relative path
-     * @param strPath the path
+     * 
+     * @param strPath
+     *            the path
      * @return the absolute path from relative path
      */
     String getAbsolutePathFromRelativePath( String strPath );
 
     /**
      * Get the default date pattern
-     * @param locale the locale
+     * 
+     * @param locale
+     *            the locale
      * @return the default date pattern
      */
     String getDefaultPattern( Locale locale );
 
     /**
      * Set the template update delay
-     * @param nTemplateUpdateDelay the template update delay
+     * 
+     * @param nTemplateUpdateDelay
+     *            the template update delay
      */
     void setTemplateUpdateDelay( int nTemplateUpdateDelay );
 
     /**
      * Adds a macro file (like the main commons.html) brought by a plugin. This file will be included for every template (autoinclude).
-     * @param strFileName the filename
+     * 
+     * @param strFileName
+     *            the filename
      */
     void addPluginMacros( String strFileName );
-    
+
     /**
      * Add a shared variable into every template
-     * @param name name of the shared variable
-     * @param obj value
+     * 
+     * @param name
+     *            name of the shared variable
+     * @param obj
+     *            value
      */
-    void setSharedVariable( String name, Object obj);
+    void setSharedVariable( String name, Object obj );
 
     /**
      * Initializes the service with the templates's path
-     * @param strTemplatePath The template path
+     * 
+     * @param strTemplatePath
+     *            The template path
      */
     void init( String strTemplatePath );
 
     /**
      * Load a template
-     * @param strPath the root path
-     * @param strTemplate the path of the template from the root path
+     * 
+     * @param strPath
+     *            the root path
+     * @param strTemplate
+     *            the path of the template from the root path
      * @return the html template
      */
     HtmlTemplate loadTemplate( String strPath, String strTemplate );
 
     /**
      * Load a template and process a model
-     * @param strPath the root path
-     * @param strTemplate the path of the template from the root path
-     * @param locale The locale
-     * @param rootMap the model root
+     * 
+     * @param strPath
+     *            the root path
+     * @param strTemplate
+     *            the path of the template from the root path
+     * @param locale
+     *            The locale
+     * @param rootMap
+     *            the model root
      * @return the processed html template
      */
     HtmlTemplate loadTemplate( String strPath, String strTemplate, Locale locale, Object rootMap );
 
     /**
-     * Load a template from a String and process a model
-     * WARNING : This method must not be used in front office (no cache management available).
+     * Load a template from a String and process a model WARNING : This method must not be used in front office (no cache management available).
      *
-     * <br /><b>Deprecated</b> Using Freemarker without cache is huge CPU consuming
+     * <br>
+     * <b>Deprecated</b> Using Freemarker without cache is huge CPU consuming
      *
-     * @param strTemplateData The template as a string
-     * @param locale The {@link Locale}
-     * @param rootMap the model root
+     * @param strTemplateData
+     *            The template as a string
+     * @param locale
+     *            The {@link Locale}
+     * @param rootMap
+     *            the model root
      * @return the processed html template
      */
     @Deprecated
@@ -119,10 +142,10 @@ public interface IFreeMarkerTemplateService
     /**
      * Clears the configuration cache
      */
-    void resetConfiguration(  );
+    void resetConfiguration( );
 
     /**
      * Reset the cache
      */
-    void resetCache(  );
+    void resetCache( );
 }
