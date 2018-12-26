@@ -34,6 +34,7 @@
 package fr.paris.lutece.portal.service.template;
 
 import fr.paris.lutece.util.html.HtmlTemplate;
+import java.util.List;
 
 import java.util.Locale;
 
@@ -148,4 +149,33 @@ public interface IFreeMarkerTemplateService
      * Reset the cache
      */
     void resetCache( );
+    
+    /**
+     * Get the list of auto includes files
+     * 
+     * @param strPath
+     *            The configuration path
+     * @return The list or null if no configuration is available
+     */
+    List<String> getAutoIncludes( String strPath );
+    
+    /**
+     * Add an auto include file
+     * 
+     * @param strPath
+     *            The configuration path
+     * @param strFile
+     *            The file to add
+     */
+    void addAutoInclude( String strPath, String strFile );
+    
+    /**
+     * Remove an auto include file
+     * 
+     * @param strPath
+     *            The configuration path
+     * @param strFile
+     *            The file to remove
+     */
+    void removeAutoInclude( String strPath, String strFile );
 }

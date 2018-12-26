@@ -314,4 +314,36 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
         return template;
     }
+
+    @Override
+    public List<String> getAutoIncludes( String strPath )
+    {
+        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
+        if ( cfg != null )
+        {
+            return cfg.getAutoIncludes( );
+        }
+        return null;
+    }
+
+    @Override
+    public void addAutoInclude( String strPath, String strFile )
+    {
+        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
+        if ( cfg != null )
+        {
+            cfg.addAutoInclude( strFile );
+        }
+    }
+
+    @Override
+    public void removeAutoInclude( String strPath, String strFile )
+    {
+        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
+        if ( cfg != null )
+        {
+            cfg.removeAutoInclude( strFile );
+        }
+    }
+
 }
