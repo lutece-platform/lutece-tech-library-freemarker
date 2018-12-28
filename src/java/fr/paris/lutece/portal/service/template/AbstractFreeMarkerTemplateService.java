@@ -108,11 +108,6 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     public void init( String strTemplatePath )
     {
         _strDefaultPath = strTemplatePath;
-        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
-        if ( cfg == null )
-        {
-            initConfig( _strDefaultPath, Locale.getDefault( ) );
-        }
     }
 
     /**
@@ -312,23 +307,23 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      * {@inheritDoc}
      */
     @Override
-    public List<String> getAutoIncludes( String strPath )
+    public List<String> getAutoIncludes( )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
-        if ( cfg != null )
+        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
+        if ( cfg == null )
         {
-            return cfg.getAutoIncludes( );
+            initConfig( _strDefaultPath, Locale.getDefault( ) );
         }
-        return null;
+        return cfg.getAutoIncludes( );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addAutoInclude( String strPath, String strFile )
+    public void addAutoInclude( String strFile )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
+        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
         if ( cfg != null )
         {
             cfg.addAutoInclude( strFile );
@@ -339,9 +334,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      * {@inheritDoc}
      */
     @Override
-    public void removeAutoInclude( String strPath, String strFile )
+    public void removeAutoInclude( String strFile )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
+        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
         if ( cfg != null )
         {
             cfg.removeAutoInclude( strFile );
