@@ -312,7 +312,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
         if ( cfg == null )
         {
-            initConfig( _strDefaultPath, Locale.getDefault( ) );
+            cfg = initConfig( _strDefaultPath, Locale.getDefault( ) );
         }
         return cfg.getAutoIncludes( );
     }
