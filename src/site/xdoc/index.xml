@@ -7,8 +7,11 @@
 		<section name="Library FreeMarker">
 			<subsection name="Introduction">
 				<p>
-					This library provides the FreeMarker service.
+					This library provides the FreeMarker service to Lutece core.
 				</p>
+                <p>
+                    Freemarker is a very popular and powerful Template Engine to build HTML pages.
+                </p>
 			</subsection>
 		</section>
 	</body>

@@ -7,8 +7,11 @@
 		<section name="Librairie FreeMarker">
 			<subsection name="Introduction">
 				<p>
-					Cette librairie fournit le service FreeMarker.
+					Cette librairie fournit le service FreeMarker au noyau Lutece.
 				</p>
+                <p>
+                    Freemarker est un moteur de templates très puissant pour générer des pages HTML.
+                </p>
 			</subsection>
 		</section>
 	</body>

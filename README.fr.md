@@ -1,11 +1,11 @@
 ![](https://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=tech-library-freemarker-deploy)
-# Library FreeMarker
+# Librairie FreeMarker
 
 ## Introduction
 
-This library provides the FreeMarker service to Lutece core.
+Cette librairie fournit le service FreeMarker au noyau Lutece.
 
-Freemarker is a very popular and powerful Template Engine to build HTML pages.
+Freemarker est un moteur de templates très puissant pour générer des pages HTML.
 
 
 [Maven documentation and reports](https://dev.lutece.paris.fr/plugins/library-freemarker/)
