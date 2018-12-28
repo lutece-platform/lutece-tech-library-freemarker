@@ -68,11 +68,11 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private static final String SETTING_DATE_FORMAT = "date_format";
 
     /** the list contains plugins specific macros */
-    private static List<String> _listPluginsMacros = new ArrayList<String>( );
-    private static Map<String, Object> _mapSharedVariables = new HashMap<String, Object>( );
-    private static Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>( );
-    private static String _strDefaultPath;
-    private static int _nTemplateUpdateDelay;
+    private List<String> _listPluginsMacros = new ArrayList<String>( );
+    private Map<String, Object> _mapSharedVariables = new HashMap<String, Object>( );
+    private Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>( );
+    private String _strDefaultPath;
+    private int _nTemplateUpdateDelay;
 
     /**
      * {@inheritDoc}
@@ -108,6 +108,11 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     public void init( String strTemplatePath )
     {
         _strDefaultPath = strTemplatePath;
+        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
+        if ( cfg == null )
+        {
+            initConfig( _strDefaultPath, Locale.getDefault( ) );
+        }
     }
 
     /**
@@ -125,67 +130,14 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public HtmlTemplate loadTemplate( String strPath, String strTemplate, Locale locale, Object rootMap )
     {
-        Configuration cfg = null;
+        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
 
-        try
+        if ( cfg == null )
         {
-            cfg = (Configuration) _mapConfigurations.get( strPath );
-
-            if ( cfg == null )
-            {
-                cfg = buildConfiguration( locale );
-                // set the root directory for template loading
-                File directory = new File( this.getAbsolutePathFromRelativePath( strPath ) );
-                cfg.setDirectoryForTemplateLoading( directory );
-                _mapConfigurations.put( strPath, cfg );
-            }
-        }
-        catch( IOException | TemplateException e )
-        {
-            throw new RuntimeException( e.getMessage( ), e );
+            initConfig( _strDefaultPath, Locale.getDefault( ) );
         }
 
         return processTemplate( cfg, strTemplate, rootMap, locale );
-    }
-
-    /**
-     * Build a configuration with default settings
-     * 
-     * @param locale
-     *            The given locale
-     * @return A configuration
-     * @throws IOException
-     *             if an error occurs
-     * @throws TemplateModelException
-     * @throws TemplateException
-     */
-    private Configuration buildConfiguration( Locale locale ) throws IOException, TemplateModelException, TemplateException
-    {
-        Configuration cfg = new Configuration( );
-
-        // add core and plugin auto-includes such as macros
-        for ( String strFileName : _listPluginsMacros )
-        {
-            cfg.addAutoInclude( strFileName );
-        }
-
-        for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
-        {
-            cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
-        }
-
-        // disable the localized look-up process to find a template
-        cfg.setLocalizedLookup( false );
-
-        // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
-        cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
-
-        // Used to set the default format to display a date and datetime
-        cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
-
-        // Time in seconds that must elapse before checking whether there is a newer version of a template file
-        cfg.setTemplateUpdateDelayMilliseconds( _nTemplateUpdateDelay * 1000 );
-        return cfg;
     }
 
     /**
@@ -240,6 +192,75 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         {
             cfg.clearTemplateCache( );
         }
+    }
+
+    /**
+     * Initialize a configuration
+     * 
+     * @param strPath
+     *            The template's path
+     * @param locale
+     *            The locale
+     * @return A configuration object
+     */
+    private Configuration initConfig( String strPath, Locale locale )
+    {
+        try
+        {
+            Configuration cfg = buildConfiguration( locale );
+            // set the root directory for template loading
+            File directory = new File( this.getAbsolutePathFromRelativePath( strPath ) );
+            cfg.setDirectoryForTemplateLoading( directory );
+            _mapConfigurations.put( strPath, cfg );
+            return cfg;
+        }
+        catch( IOException | TemplateException e )
+        {
+            throw new RuntimeException( e.getMessage( ), e );
+        }
+
+    }
+
+    /**
+     * Build a configuration with default settings
+     * 
+     * @param locale
+     *            The given locale
+     * @return A configuration
+     * @throws IOException
+     *             if an error occurs
+     * @throws TemplateModelException
+     *             if an error occurs
+     * @throws TemplateException
+     *             if an error occurs
+     */
+    private Configuration buildConfiguration( Locale locale ) throws IOException, TemplateModelException, TemplateException
+    {
+        Configuration cfg = new Configuration( );
+
+        // add core and plugin auto-includes such as macros
+        for ( String strFileName : _listPluginsMacros )
+        {
+            cfg.addAutoInclude( strFileName );
+        }
+
+        for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
+        {
+            cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
+        }
+
+        // disable the localized look-up process to find a template
+        cfg.setLocalizedLookup( false );
+
+        // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
+        cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
+
+        // Used to set the default format to display a date and datetime
+        cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
+
+        // Time in seconds that must elapse before checking whether there is a newer version of a template file
+        cfg.setTemplateUpdateDelayMilliseconds( _nTemplateUpdateDelay * 1000 );
+        return cfg;
     }
 
     /**
