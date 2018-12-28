@@ -44,6 +44,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModelException;
+import freemarker.template.Version;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,6 +74,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>( );
     private String _strDefaultPath;
     private int _nTemplateUpdateDelay;
+    private boolean _bAcceptIncompatibleImprovements;
 
     /**
      * {@inheritDoc}
@@ -108,6 +110,17 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     public void init( String strTemplatePath )
     {
         _strDefaultPath = strTemplatePath;
+        _bAcceptIncompatibleImprovements = false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init( String strTemplatePath, boolean bAcceptIncompatibleImprovements )
+    {
+        _strDefaultPath = strTemplatePath;
+        _bAcceptIncompatibleImprovements = bAcceptIncompatibleImprovements;
     }
 
     /**
@@ -231,7 +244,8 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      */
     private Configuration buildConfiguration( Locale locale ) throws IOException, TemplateModelException, TemplateException
     {
-        Configuration cfg = new Configuration( );
+        Version version = ( _bAcceptIncompatibleImprovements ) ? Configuration.VERSION_2_3_28 : Configuration.VERSION_2_3_0;
+        Configuration cfg =  new Configuration( version );
 
         // add core and plugin auto-includes such as macros
         for ( String strFileName : _listPluginsMacros )

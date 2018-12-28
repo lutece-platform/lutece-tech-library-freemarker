@@ -98,6 +98,16 @@ public interface IFreeMarkerTemplateService
     void init( String strTemplatePath );
 
     /**
+     * Initializes the service with the templates's path
+     * 
+     * @param strTemplatePath
+     *            The template path
+     * @param bAcceptIncompatibleImprovements
+     *            Use Freemarker new features or stay backward compatible
+     */
+    void init( String strTemplatePath, boolean bAcceptIncompatibleImprovements );
+
+    /**
      * Load a template
      * 
      * @param strPath
