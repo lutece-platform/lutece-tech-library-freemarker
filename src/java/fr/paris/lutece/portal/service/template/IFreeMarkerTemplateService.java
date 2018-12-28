@@ -149,7 +149,7 @@ public interface IFreeMarkerTemplateService
      * Reset the cache
      */
     void resetCache( );
-    
+
     /**
      * Get the list of auto includes files
      * 
@@ -158,7 +158,7 @@ public interface IFreeMarkerTemplateService
      * @return The list or null if no configuration is available
      */
     List<String> getAutoIncludes( String strPath );
-    
+
     /**
      * Add an auto include file
      * 
@@ -168,7 +168,7 @@ public interface IFreeMarkerTemplateService
      *            The file to add
      */
     void addAutoInclude( String strPath, String strFile );
-    
+
     /**
      * Remove an auto include file
      * 

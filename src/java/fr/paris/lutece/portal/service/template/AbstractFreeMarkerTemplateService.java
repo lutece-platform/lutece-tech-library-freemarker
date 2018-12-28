@@ -43,8 +43,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-
-import org.apache.log4j.Logger;
+import freemarker.template.TemplateModelException;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,12 +68,11 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private static final String SETTING_DATE_FORMAT = "date_format";
 
     /** the list contains plugins specific macros */
-    private static final List<String> _listPluginsMacros = new ArrayList<String>( );
-    private static final Map<String, Object> _mapSharedVariables = new HashMap<String, Object>( );
+    private static List<String> _listPluginsMacros = new ArrayList<String>( );
+    private static Map<String, Object> _mapSharedVariables = new HashMap<String, Object>( );
     private static Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>( );
     private static String _strDefaultPath;
     private static int _nTemplateUpdateDelay;
-    private static Logger _logger = Logger.getLogger( "lutece.freemarker" );
 
     /**
      * {@inheritDoc}
@@ -135,56 +133,59 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
             if ( cfg == null )
             {
-                cfg = new Configuration( );
-
+                cfg = buildConfiguration( locale );
                 // set the root directory for template loading
                 File directory = new File( this.getAbsolutePathFromRelativePath( strPath ) );
                 cfg.setDirectoryForTemplateLoading( directory );
-
-                if ( ( strPath != null ) && ( strPath.equals( _strDefaultPath ) ) )
-                {
-                    // add the macros auto inclusion
-                    // cfg.addAutoInclude( PATH_AUTO_INCLUDE_COMMONS );
-                    // add the plugins macros auto inclusion
-                    for ( String strFileName : _listPluginsMacros )
-                    {
-                        cfg.addAutoInclude( strFileName );
-                    }
-                }
-
-                for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
-                {
-                    cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
-                }
-
-                // disable the localized look-up process to find a template
-                cfg.setLocalizedLookup( false );
-
-                // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
-                cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
-
                 _mapConfigurations.put( strPath, cfg );
-
-                // Used to set the default format to display a date and datetime
-                cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
-
-                // WARNING : the Datetime format is defined as the date format, i.e. the hours and minutes will not be displayed
-                // cfg.setSetting( SETTING_DATETIME_FORMAT, DateUtil.getDefaultPattern( locale ) );
-
-                // Time in seconds that must elapse before checking whether there is a newer version of a template file
-                cfg.setTemplateUpdateDelay( _nTemplateUpdateDelay );
             }
         }
-        catch( IOException e )
+        catch( IOException | TemplateException e )
         {
-            _logger.error( e.getMessage( ), e );
-        }
-        catch( TemplateException e )
-        {
-            throw new RuntimeException( e.getMessage( ) );
+            throw new RuntimeException( e.getMessage( ), e );
         }
 
         return processTemplate( cfg, strTemplate, rootMap, locale );
+    }
+
+    /**
+     * Build a configuration with default settings
+     * 
+     * @param locale
+     *            The given locale
+     * @return A configuration
+     * @throws IOException
+     *             if an error occurs
+     * @throws TemplateModelException
+     * @throws TemplateException
+     */
+    private Configuration buildConfiguration( Locale locale ) throws IOException, TemplateModelException, TemplateException
+    {
+        Configuration cfg = new Configuration( );
+
+        // add core and plugin auto-includes such as macros
+        for ( String strFileName : _listPluginsMacros )
+        {
+            cfg.addAutoInclude( strFileName );
+        }
+
+        for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
+        {
+            cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
+        }
+
+        // disable the localized look-up process to find a template
+        cfg.setLocalizedLookup( false );
+
+        // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
+        cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
+
+        // Used to set the default format to display a date and datetime
+        cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
+
+        // Time in seconds that must elapse before checking whether there is a newer version of a template file
+        cfg.setTemplateUpdateDelayMilliseconds( _nTemplateUpdateDelay * 1000 );
+        return cfg;
     }
 
     /**
@@ -194,11 +195,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Deprecated
     public HtmlTemplate loadTemplate( String strTemplateData, Locale locale, Object rootMap )
     {
-        Configuration cfg = null;
-
         try
         {
-            cfg = new Configuration( );
+            Configuration cfg = buildConfiguration( locale );
 
             // set the root directory for template loading
             File directory = new File( this.getAbsolutePathFromRelativePath( _strDefaultPath ) );
@@ -213,36 +212,13 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
             cfg.setTemplateLoader( mtl );
 
-            // add the macros auto inclusion
-            // cfg.addAutoInclude( PATH_AUTO_INCLUDE_COMMONS );
-            for ( String strFileName : _listPluginsMacros )
-            {
-                cfg.addAutoInclude( strFileName );
-            }
+            return processTemplate( cfg, STRING_TEMPLATE_LOADER_NAME, rootMap, locale );
 
-            for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
-            {
-                cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
-            }
-
-            // disable the localized look-up process to find a template
-            cfg.setLocalizedLookup( false );
-
-            // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
-            cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
-
-            // Used to set the default format to display a date and datetime
-            cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
-
-            // Time in seconds that must elapse before checking whether there is a newer version of a template file
-            cfg.setTemplateUpdateDelay( _nTemplateUpdateDelay );
         }
         catch( IOException | TemplateException e )
         {
-            _logger.error( e.getMessage( ), e );
+            throw new RuntimeException( e.getMessage( ), e );
         }
-
-        return processTemplate( cfg, STRING_TEMPLATE_LOADER_NAME, rootMap, locale );
     }
 
     /**
@@ -303,18 +279,17 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
             ftl.process( rootMap, writer );
             template = new HtmlTemplate( writer.toString( ) );
         }
-        catch( IOException e )
+        catch( IOException | TemplateException e )
         {
-            _logger.error( e.getMessage( ), e );
-        }
-        catch( TemplateException e )
-        {
-            throw new RuntimeException( e.getMessage( ) );
+            throw new RuntimeException( e.getMessage( ), e );
         }
 
         return template;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getAutoIncludes( String strPath )
     {
@@ -326,6 +301,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addAutoInclude( String strPath, String strFile )
     {
@@ -336,6 +314,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeAutoInclude( String strPath, String strFile )
     {
