@@ -142,7 +142,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
         if ( cfg == null )
         {
-            initConfig( _strDefaultPath, Locale.getDefault( ) );
+            cfg = initConfig( _strDefaultPath, Locale.getDefault( ) );
         }
 
         return processTemplate( cfg, strTemplate, rootMap, locale );
