@@ -33,29 +33,26 @@
  */
 package fr.paris.lutece.portal.service.template;
 
-import fr.paris.lutece.util.html.HtmlTemplate;
-
-import freemarker.cache.FileTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
-import freemarker.cache.StringTemplateLoader;
-import freemarker.cache.TemplateLoader;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModelException;
-import freemarker.template.Version;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.html.exception.LuteceFreemarkerException;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.StringTemplateLoader;
+import freemarker.cache.TemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 /**
  *
@@ -69,9 +66,9 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private static final String SETTING_DATE_FORMAT = "date_format";
 
     /** the list contains plugins specific macros */
-    private List<String> _listPluginsMacros = new ArrayList<String>( );
-    private Map<String, Object> _mapSharedVariables = new HashMap<String, Object>( );
-    private Map<String, Configuration> _mapConfigurations = new HashMap<String, Configuration>( );
+    private List<String> _listPluginsMacros = new ArrayList<>( );
+    private Map<String, Object> _mapSharedVariables = new HashMap<>( );
+    private Map<String, Configuration> _mapConfigurations = new HashMap<>( );
     private String _strDefaultPath;
     private int _nTemplateUpdateDelay;
     private boolean _bAcceptIncompatibleImprovements;
@@ -138,7 +135,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public HtmlTemplate loadTemplate( String strPath, String strTemplate, Locale locale, Object rootMap )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( strPath );
+        Configuration cfg = _mapConfigurations.get( strPath );
 
         if ( cfg == null )
         {
@@ -152,7 +149,6 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      * {@inheritDoc}
      */
     @Override
-    @Deprecated
     public HtmlTemplate loadTemplate( String strTemplateData, Locale locale, Object rootMap )
     {
         try
@@ -177,7 +173,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         }
         catch( IOException | TemplateException e )
         {
-            throw new RuntimeException( e.getMessage( ), e );
+            throw new LuteceFreemarkerException( e.getMessage( ), e );
         }
     }
 
@@ -187,7 +183,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public void resetConfiguration( )
     {
-        _mapConfigurations = new HashMap<String, Configuration>( );
+        _mapConfigurations = new HashMap<>( );
     }
 
     /**
@@ -224,7 +220,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         }
         catch( IOException | TemplateException e )
         {
-            throw new RuntimeException( e.getMessage( ), e );
+            throw new LuteceFreemarkerException( e.getMessage( ), e );
         }
 
     }
@@ -235,14 +231,10 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      * @param locale
      *            The given locale
      * @return A configuration
-     * @throws IOException
-     *             if an error occurs
-     * @throws TemplateModelException
-     *             if an error occurs
      * @throws TemplateException
      *             if an error occurs
      */
-    private Configuration buildConfiguration( Locale locale ) throws IOException, TemplateModelException, TemplateException
+    private Configuration buildConfiguration( Locale locale ) throws TemplateException
     {
         Version version = ( _bAcceptIncompatibleImprovements ) ? Configuration.VERSION_2_3_28 : Configuration.VERSION_2_3_0;
         Configuration cfg =  new Configuration( version );
@@ -268,7 +260,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
 
         // Time in seconds that must elapse before checking whether there is a newer version of a template file
-        cfg.setTemplateUpdateDelayMilliseconds( _nTemplateUpdateDelay * 1000 );
+        cfg.setTemplateUpdateDelayMilliseconds( ( ( long ) _nTemplateUpdateDelay ) * 1000L );
         return cfg;
     }
 
@@ -311,7 +303,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         }
         catch( IOException | TemplateException e )
         {
-            throw new RuntimeException( e.getMessage( ), e );
+            throw new LuteceFreemarkerException( e.getMessage( ), e );
         }
 
         return template;
@@ -323,7 +315,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public List<String> getAutoIncludes( )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
         if ( cfg == null )
         {
             cfg = initConfig( _strDefaultPath, Locale.getDefault( ) );
@@ -337,7 +329,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public void addAutoInclude( String strFile )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
         if ( cfg != null )
         {
             cfg.addAutoInclude( strFile );
@@ -350,7 +342,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public void removeAutoInclude( String strFile )
     {
-        Configuration cfg = (Configuration) _mapConfigurations.get( _strDefaultPath );
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
         if ( cfg != null )
         {
             cfg.removeAutoInclude( strFile );

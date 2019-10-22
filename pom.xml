@@ -15,7 +15,7 @@
         <jiraProjectName>LIBRARYFREEMARKER</jiraProjectName>
         <jiraComponentId>10678</jiraComponentId>
     </properties>
-	
+
     <repositories>
         <repository>
             <id>luteceSnapshot</id>
@@ -34,7 +34,7 @@
             </snapshots>
         </repository>
     </repositories>
-	
+
     <dependencies>
         <dependency>
             <groupId>org.freemarker</groupId>

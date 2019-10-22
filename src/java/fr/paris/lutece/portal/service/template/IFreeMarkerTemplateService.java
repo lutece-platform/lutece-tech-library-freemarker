@@ -137,7 +137,7 @@ public interface IFreeMarkerTemplateService
      * Load a template from a String and process a model WARNING : This method must not be used in front office (no cache management available).
      *
      * <br>
-     * <b>Deprecated</b> Using Freemarker without cache is huge CPU consuming
+     * Using Freemarker without cache is huge CPU consuming, only sue this method for dynamic templates
      *
      * @param strTemplateData
      *            The template as a string
@@ -147,7 +147,6 @@ public interface IFreeMarkerTemplateService
      *            the model root
      * @return the processed html template
      */
-    @Deprecated
     HtmlTemplate loadTemplate( String strTemplateData, Locale locale, Object rootMap );
 
     /**

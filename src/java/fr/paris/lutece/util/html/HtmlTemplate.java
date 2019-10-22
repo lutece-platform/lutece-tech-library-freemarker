@@ -48,7 +48,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * This class represents an HTML template that may include bookmarks that can be substitute by values.
+ * This class represents an HTML template that may include bookmarks that can be
+ * substitute by values.
  *
  * @version 1.2.5
  */
@@ -66,8 +67,7 @@ public class HtmlTemplate
     /**
      * Constructor 2
      *
-     * @param strTemplate
-     *            The template as a string
+     * @param strTemplate The template as a string
      */
     public HtmlTemplate( String strTemplate )
     {
@@ -77,8 +77,7 @@ public class HtmlTemplate
     /**
      * Constructor 3
      *
-     * @param template
-     *            Copy constructor based on another template.
+     * @param template Copy constructor based on another template.
      */
     public HtmlTemplate( HtmlTemplate template )
     {
@@ -88,50 +87,45 @@ public class HtmlTemplate
     /**
      * Load the template from a file
      *
-     * @param strFilename
-     *            The file name to load
-     * @throws IOException
-     *             If an error occured
+     * @param strFilename The file name to load
+     * @throws IOException If an error occured
      */
     public void load( String strFilename ) throws IOException
     {
-        FileReader fr = new FileReader( strFilename );
-        BufferedReader in = new BufferedReader( fr );
-        String strLine;
-        StringBuilder sbContent = new StringBuilder( );
 
-        while ( ( strLine = in.readLine( ) ) != null )
+        try ( BufferedReader in = new BufferedReader( new FileReader( strFilename ) ) )
         {
-            sbContent.append( strLine ).append( "\r\n" );
-        }
-        _strTemplate = sbContent.toString( );
+            String strLine;
+            StringBuilder sbContent = new StringBuilder( );
 
-        in.close( );
+            while ( ( strLine = in.readLine( ) ) != null )
+            {
+                sbContent.append( strLine ).append( "\r\n" );
+            }
+            _strTemplate = sbContent.toString( );
+        }
     }
 
     /**
      * Load the template from an InputStream
      *
-     * @param is
-     *            The open InputStream that point on the template
-     * @throws IOException
-     *             If an error occured
+     * @param is The open InputStream that point on the template
+     * @throws IOException If an error occured
      */
     public void load( InputStream is ) throws IOException
     {
-        InputStreamReader fr = new InputStreamReader( is );
-        BufferedReader in = new BufferedReader( fr );
-        String strLine;
-        StringBuilder sbContent = new StringBuilder( );
-
-        while ( ( strLine = in.readLine( ) ) != null )
+        try ( BufferedReader in = new BufferedReader( new InputStreamReader( is ) ) )
         {
-            sbContent.append( strLine ).append( "\r\n" );
-        }
-        _strTemplate = sbContent.toString( );
+            String strLine;
+            StringBuilder sbContent = new StringBuilder( );
 
-        in.close( );
-        is.close( );
+            while ( ( strLine = in.readLine( ) ) != null )
+            {
+                sbContent.append( strLine ).append( "\r\n" );
+            }
+            _strTemplate = sbContent.toString( );
+
+        }
     }
 
     /**
@@ -147,10 +141,8 @@ public class HtmlTemplate
     /**
      * Substitute each appearance of a bookmark by a given value.
      *
-     * @param strBookmark
-     *            The bookmark that must be present in the template.
-     * @param strValue
-     *            The value to substitute as a String.
+     * @param strBookmark The bookmark that must be present in the template.
+     * @param strValue    The value to substitute as a String.
      */
     public void substitute( String strBookmark, String strValue )
     {
@@ -160,10 +152,8 @@ public class HtmlTemplate
     /**
      * Substitute each appearance of a bookmark by a given value.
      *
-     * @param strBookmark
-     *            The bookmark that must be present in the template.
-     * @param nValue
-     *            The value to substitute as an integer.
+     * @param strBookmark The bookmark that must be present in the template.
+     * @param nValue      The value to substitute as an integer.
      */
     public void substitute( String strBookmark, int nValue )
     {
@@ -174,10 +164,8 @@ public class HtmlTemplate
     /**
      * Substitute each appearance of a bookmark by a given value.
      *
-     * @param strBookmark
-     *            The bookmark that must be present in the template.
-     * @param date
-     *            The value to substitute as a Date.
+     * @param strBookmark The bookmark that must be present in the template.
+     * @param date        The value to substitute as a Date.
      */
     public void substitute( String strBookmark, java.sql.Date date )
     {
@@ -188,10 +176,8 @@ public class HtmlTemplate
     /**
      * Substitute each occurence of a bookmark by a given value.
      *
-     * @param strBookmark
-     *            The bookmark that must be present in the template.
-     * @param date
-     *            The value to substitute as a Timestamp.
+     * @param strBookmark The bookmark that must be present in the template.
+     * @param date        The value to substitute as a Timestamp.
      */
     public void substitute( String strBookmark, java.sql.Timestamp date )
     {
@@ -202,8 +188,7 @@ public class HtmlTemplate
     /**
      * Converts a date value to a String date
      * 
-     * @param date
-     *            The date
+     * @param date The date
      * @return The formatted string
      */
     private static String getDateString( java.util.Date date )
@@ -223,12 +208,9 @@ public class HtmlTemplate
     /**
      * This function substitutes all occurences of a given bookmark by a given value
      *
-     * @param strSource
-     *            The input string that contains bookmarks to replace
-     * @param strValue
-     *            The value to substitute to the bookmark
-     * @param strBookmark
-     *            The bookmark name
+     * @param strSource   The input string that contains bookmarks to replace
+     * @param strValue    The value to substitute to the bookmark
+     * @param strBookmark The bookmark name
      * @return The output string.
      */
     private static String substitute( String strSource, String strValue, String strBookmark )
