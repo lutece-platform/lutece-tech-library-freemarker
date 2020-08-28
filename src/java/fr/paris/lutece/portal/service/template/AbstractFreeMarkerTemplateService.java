@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2019, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -198,6 +198,16 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         }
     }
 
+    
+    public void initConfig( Locale locale )
+    {
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
+        if ( cfg == null )
+        {
+            initConfig( _strDefaultPath, locale );
+        }
+    }
+    
     /**
      * Initialize a configuration
      * 
