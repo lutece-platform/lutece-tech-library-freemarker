@@ -12,6 +12,7 @@
     <description>FreeMarker library</description>
     
     <properties>
+        <sonar.sources>pom.xml,src/java</sonar.sources>
         <jiraProjectName>LIBRARYFREEMARKER</jiraProjectName>
         <jiraComponentId>10678</jiraComponentId>
     </properties>
