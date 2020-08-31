@@ -198,7 +198,10 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         }
     }
 
-    
+    /**
+     * Init a configuration using the current default path
+     * @param locale The Locale
+     */
     public void initConfig( Locale locale )
     {
         Configuration cfg = _mapConfigurations.get( _strDefaultPath );
