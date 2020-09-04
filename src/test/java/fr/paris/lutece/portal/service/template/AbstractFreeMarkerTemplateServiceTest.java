@@ -55,10 +55,13 @@ public class AbstractFreeMarkerTemplateServiceTest
     private static final String FILE_TEMPLATE_1 = "template1.html";
     private static final String FILE_TEMPLATE_2 = "template2.html";
     private static final String FILE_TEMPLATE_3 = "template3.html";
+    private static final String FILE_TEMPLATE_4 = "template4.html";
     private static final String FILE_AUTO_INCLUDE = "auto_include.html";
+    private static final String FILE_AUTO_INCLUDE_WITH_INCLUDE = "auto_include_with_include.html";
     private static final String EXPECTED_1 = "expected1.html";
     private static final String EXPECTED_2 = "expected2.html";
     private static final String EXPECTED_3 = "expected3.html";
+    private static final String EXPECTED_4 = "expected4.html";
     
     private static final String MARK_VALUE = "value";
     private static final String VALUE_TEST = "test";
@@ -172,6 +175,34 @@ public class AbstractFreeMarkerTemplateServiceTest
         assertEquals( strExpected, result.getHtml() );
         
         instance.removeAutoInclude( FILE_AUTO_INCLUDE );
+        
+        list = instance.getAutoIncludes();
+        assertTrue( list.isEmpty() );
+
+    }
+
+    /**
+     * Test of getAutoIncludes method, of class AbstractFreeMarkerTemplateService.
+     * @throws java.io.IOException
+     */
+    @Test
+    public void testAutoIncludesWithInclude() throws IOException
+    {
+        System.out.println( "AutoIncludes" );
+        AbstractFreeMarkerTemplateService instance = getInstance( true );
+
+        instance.initConfig( Locale.US );
+
+        instance.addAutoInclude( FILE_AUTO_INCLUDE_WITH_INCLUDE );
+        
+        List list = instance.getAutoIncludes();
+        assertTrue( list.size() == 1 );
+
+        HtmlTemplate result = instance.loadTemplate(PATH_TEMPLATES, FILE_TEMPLATE_4 );
+        String strExpected = FileUtils.readFileToString(new File( PATH_TEMPLATES + EXPECTED_4 ));
+        assertEquals( strExpected, result.getHtml() );
+        
+        instance.removeAutoInclude( FILE_AUTO_INCLUDE_WITH_INCLUDE );
         
         list = instance.getAutoIncludes();
         assertTrue( list.isEmpty() );
