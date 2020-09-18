@@ -153,7 +153,12 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     {
         try
         {
-            Configuration cfg = buildConfiguration( locale );
+            Configuration cfg = _mapConfigurations.get( _strDefaultPath );
+
+            if ( cfg == null )
+            {
+                cfg = initConfig( _strDefaultPath, Locale.getDefault( ) );
+            }
 
             // set the root directory for template loading
             File directory = new File( this.getAbsolutePathFromRelativePath( _strDefaultPath ) );
@@ -171,7 +176,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
             return processTemplate( cfg, STRING_TEMPLATE_LOADER_NAME, rootMap, locale );
 
         }
-        catch( IOException | TemplateException e )
+        catch( IOException e )
         {
             throw new LuteceFreemarkerException( e.getMessage( ), e );
         }
