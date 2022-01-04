@@ -36,6 +36,9 @@ package fr.paris.lutece.portal.service.template;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +67,10 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private static final String STRING_TEMPLATE_LOADER_NAME = "stringTemplate";
     private static final String NUMBER_FORMAT_PATTERN = "0.######";
     private static final String SETTING_DATE_FORMAT = "date_format";
+    private static final String CONSTANT_HASH_ENCODING = "UTF-8";
+    private static final String CONSTANT_HASH_DIGEST = "MD5";
+    private static final String MARK_DYNAMIC_TEMPLATE="dynamic_template";
+    
 
     /** the list contains plugins specific macros */
     private List<String> _listPluginsMacros = new ArrayList<>( );
@@ -72,6 +79,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private String _strDefaultPath;
     private int _nTemplateUpdateDelay;
     private boolean _bAcceptIncompatibleImprovements;
+    
 
     /**
      * {@inheritDoc}
@@ -145,42 +153,55 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         return processTemplate( cfg, strTemplate, rootMap, locale );
     }
 
+  
     /**
-     * {@inheritDoc}
-     */
+    * {@inheritDoc}
+   */
     @Override
     public HtmlTemplate loadTemplate( String strTemplateData, Locale locale, Object rootMap )
     {
         try
         {
-            Configuration cfg = _mapConfigurations.get( _strDefaultPath );
+            String strContentKey=getHash(strTemplateData);
+        	
+        	Configuration cfg = _mapConfigurations.get( MARK_DYNAMIC_TEMPLATE );
+        	if(cfg==null)
+        	{
+        		
+        		
+        	
+	            cfg = buildConfiguration( locale );
+	            // set the root directory for template loading
+	            File directory = new File( this.getAbsolutePathFromRelativePath( _strDefaultPath ) );
+	            FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
+	            StringTemplateLoader stringLoader = new StringTemplateLoader( );
+	            stringLoader.putTemplate( strContentKey, strTemplateData );
+	
+	            TemplateLoader [ ] loaders = new TemplateLoader [ ] {
+	                    ftl1, stringLoader
+	            };
+	           
+	            
+	            MultiTemplateLoader mtl = new MultiTemplateLoader( loaders );
+	            cfg.setTemplateLoader( mtl );
+	            _mapConfigurations.put(MARK_DYNAMIC_TEMPLATE, cfg);
 
-            if ( cfg == null )
-            {
-                cfg = initConfig( _strDefaultPath, Locale.getDefault( ) );
-            }
+        	}
+        	else
+        	{
+              MultiTemplateLoader mtl= (MultiTemplateLoader)cfg.getTemplateLoader();
+             ((StringTemplateLoader)mtl.getTemplateLoader(1)).putTemplate( strContentKey, strTemplateData );
 
-            // set the root directory for template loading
-            File directory = new File( this.getAbsolutePathFromRelativePath( _strDefaultPath ) );
-            FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
-            StringTemplateLoader stringLoader = new StringTemplateLoader( );
-            stringLoader.putTemplate( STRING_TEMPLATE_LOADER_NAME, strTemplateData );
-
-            TemplateLoader [ ] loaders = new TemplateLoader [ ] {
-                    ftl1, stringLoader
-            };
-            MultiTemplateLoader mtl = new MultiTemplateLoader( loaders );
-
-            cfg.setTemplateLoader( mtl );
-
-            return processTemplate( cfg, STRING_TEMPLATE_LOADER_NAME, rootMap, locale );
+         }
+           return processTemplate( cfg, strContentKey, rootMap, locale );
 
         }
-        catch( IOException e )
+        catch( IOException | TemplateException e )
         {
             throw new LuteceFreemarkerException( e.getMessage( ), e );
         }
     }
+    
 
     /**
      * {@inheritDoc}
@@ -366,5 +387,44 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
             cfg.removeAutoInclude( strFile );
         }
     }
+    
+    
+    /**
+     * get hash
+     *
+     * @param message
+     * @param last
+     *            hash
+     *
+     * @return the hash in String
+     */
+    private static String getHash( String message )
+    {
+
+        byte [ ] byteChaine;
+        try
+        {
+            byteChaine = message.getBytes( CONSTANT_HASH_ENCODING );
+            MessageDigest md = MessageDigest.getInstance( CONSTANT_HASH_DIGEST );
+            byte [ ] hash = md.digest( byteChaine );
+
+            // convert byte array to Hexadecimal String
+            StringBuilder sb = new StringBuilder( 2 * hash.length );
+            for ( byte b : hash )
+            {
+                sb.append( String.format( "%02x", b & 0xff ) );
+            }
+
+            return sb.toString( );
+
+        }
+        catch( UnsupportedEncodingException | NoSuchAlgorithmException e )
+        {
+            return "Hash ERROR : " + e.getLocalizedMessage( );
+        }
+
+    }
+
+
 
 }
