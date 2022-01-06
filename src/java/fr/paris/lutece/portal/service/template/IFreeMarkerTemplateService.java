@@ -134,10 +134,10 @@ public interface IFreeMarkerTemplateService
     HtmlTemplate loadTemplate( String strPath, String strTemplate, Locale locale, Object rootMap );
 
     /**
-     * Load a template from a String and process a model WARNING : This method must not be used in front office (no cache management available).
-     *
-     * <br>
-     * Using Freemarker without cache is huge CPU consuming, only sue this method for dynamic templates
+     * Load a template from a String and process a model.
+     * the template data is stored in the StringTemplateLoader of freemarker. 
+     * the template key is generate by a hash of the template data.
+     *    
      *
      * @param strTemplateData
      *            The template as a string
@@ -147,7 +147,22 @@ public interface IFreeMarkerTemplateService
      *            the model root
      * @return the processed html template
      */
-    HtmlTemplate loadTemplate( String strTemplateData, Locale locale, Object rootMap );
+    HtmlTemplate loadTemplateFromStringFtl( String strTemplateData, Locale locale, Object rootMap );
+    
+    
+    /**
+     * Load a template from a String and process a model.
+     * the template data is stored in the StringTemplateLoader of freemarker using strTemplateName as key 
+
+     * @param strTemplateName the key of the template put in the StringTemplateLoader. The template name must be a Fully qualified name (skin.plugins.myplugin.manage_my_objects)
+     * @param strTemplateData The template as a string
+     * @param locale  The {@link Locale}
+     * @param rootMap  the model root
+     * @param bResetCacheTemplate force the update of the template data stored in the StringTemplateLoader
+     * @return the processed html template
+     */
+    
+    HtmlTemplate loadTemplateFromStringFtl(String strTemplateName,String strTemplateData, Locale locale, Object rootMap,boolean bResetCacheTemplate);
 
     /**
      * Clears the configuration cache

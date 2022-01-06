@@ -64,12 +64,10 @@ import freemarker.template.Version;
  */
 public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTemplateService
 {
-    private static final String STRING_TEMPLATE_LOADER_NAME = "stringTemplate";
     private static final String NUMBER_FORMAT_PATTERN = "0.######";
     private static final String SETTING_DATE_FORMAT = "date_format";
     private static final String CONSTANT_HASH_ENCODING = "UTF-8";
     private static final String CONSTANT_HASH_DIGEST = "MD5";
-    private static final String MARK_DYNAMIC_TEMPLATE="dynamic_template";
     
 
     /** the list contains plugins specific macros */
@@ -158,49 +156,44 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     * {@inheritDoc}
    */
     @Override
-    public HtmlTemplate loadTemplate( String strTemplateData, Locale locale, Object rootMap )
-    {
-        try
-        {
-            String strContentKey=getHash(strTemplateData);
-        	
-        	Configuration cfg = _mapConfigurations.get( MARK_DYNAMIC_TEMPLATE );
-        	if(cfg==null)
-        	{
-        		
-        		
-        	
-	            cfg = buildConfiguration( locale );
-	            // set the root directory for template loading
-	            File directory = new File( this.getAbsolutePathFromRelativePath( _strDefaultPath ) );
-	            FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
-	            StringTemplateLoader stringLoader = new StringTemplateLoader( );
-	            stringLoader.putTemplate( strContentKey, strTemplateData );
+	public HtmlTemplate loadTemplateFromStringFtl(String strTemplateData, Locale locale, Object rootMap) {
+		try {
+			String strContentKey = getHash(strTemplateData);
+			return loadTemplateFromStringFtl(strContentKey, strTemplateData, locale, rootMap, false);
+		}
+		catch (NoSuchAlgorithmException | UnsupportedEncodingException hashEx) {
+
+			throw new LuteceFreemarkerException(
+					"Can not create hash for template content " + strTemplateData + hashEx.getMessage(), hashEx);
+
+		}
+
+	}
+    
+    
+
+    /**
+    * {@inheritDoc}
+   */
+    @Override
+	public HtmlTemplate loadTemplateFromStringFtl(String strTemplateName,String strTemplateData, Locale locale, Object rootMap,boolean bResetCacheTemplate) {
 	
-	            TemplateLoader [ ] loaders = new TemplateLoader [ ] {
-	                    ftl1, stringLoader
-	            };
-	           
-	            
-	            MultiTemplateLoader mtl = new MultiTemplateLoader( loaders );
-	            cfg.setTemplateLoader( mtl );
-	            _mapConfigurations.put(MARK_DYNAMIC_TEMPLATE, cfg);
 
-        	}
-        	else
-        	{
-              MultiTemplateLoader mtl= (MultiTemplateLoader)cfg.getTemplateLoader();
-             ((StringTemplateLoader)mtl.getTemplateLoader(1)).putTemplate( strContentKey, strTemplateData );
+			Configuration cfg = _mapConfigurations.get(_strDefaultPath);
 
-         }
-           return processTemplate( cfg, strContentKey, rootMap, locale );
+			if (cfg == null) {
+				cfg = initConfig(_strDefaultPath, Locale.getDefault());
+			}
 
-        }
-        catch( IOException | TemplateException e )
-        {
-            throw new LuteceFreemarkerException( e.getMessage( ), e );
-        }
-    }
+			MultiTemplateLoader mtl = (MultiTemplateLoader) cfg.getTemplateLoader();
+			if ( bResetCacheTemplate || ((StringTemplateLoader) mtl.getTemplateLoader(1)).findTemplateSource(strTemplateName) == null) {
+				((StringTemplateLoader) mtl.getTemplateLoader(1)).putTemplate(strTemplateName, strTemplateData);
+			}
+
+			return processTemplate(cfg, strTemplateName, rootMap, locale);
+		
+
+	}
     
 
     /**
@@ -253,7 +246,17 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
             Configuration cfg = buildConfiguration( locale );
             // set the root directory for template loading
             File directory = new File( this.getAbsolutePathFromRelativePath( strPath ) );
-            cfg.setDirectoryForTemplateLoading( directory );
+            FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
+            StringTemplateLoader stringLoader = new StringTemplateLoader( );
+
+            TemplateLoader [ ] loaders = new TemplateLoader [ ] {
+                    ftl1, stringLoader
+            };
+            
+            MultiTemplateLoader mtl = new MultiTemplateLoader( loaders );
+            cfg.setTemplateLoader( mtl );
+            
+            
             _mapConfigurations.put( strPath, cfg );
             return cfg;
         }
@@ -397,31 +400,27 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      *            hash
      *
      * @return the hash in String
+     * @throws UnsupportedEncodingException 
+     * @throws NoSuchAlgorithmException 
      */
-    private static String getHash( String message )
+    private static String getHash( String message ) throws UnsupportedEncodingException, NoSuchAlgorithmException 
     {
 
         byte [ ] byteChaine;
-        try
+        byteChaine = message.getBytes( CONSTANT_HASH_ENCODING );
+        MessageDigest md = MessageDigest.getInstance( CONSTANT_HASH_DIGEST );
+        byte [ ] hash = md.digest( byteChaine );
+
+        // convert byte array to Hexadecimal String
+        StringBuilder sb = new StringBuilder( 2 * hash.length );
+        for ( byte b : hash )
         {
-            byteChaine = message.getBytes( CONSTANT_HASH_ENCODING );
-            MessageDigest md = MessageDigest.getInstance( CONSTANT_HASH_DIGEST );
-            byte [ ] hash = md.digest( byteChaine );
-
-            // convert byte array to Hexadecimal String
-            StringBuilder sb = new StringBuilder( 2 * hash.length );
-            for ( byte b : hash )
-            {
-                sb.append( String.format( "%02x", b & 0xff ) );
-            }
-
-            return sb.toString( );
-
+            sb.append( String.format( "%02x", b & 0xff ) );
         }
-        catch( UnsupportedEncodingException | NoSuchAlgorithmException e )
-        {
-            return "Hash ERROR : " + e.getLocalizedMessage( );
-        }
+
+          	return sb.toString( );
+
+      
 
     }
 
