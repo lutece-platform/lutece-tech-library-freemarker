@@ -71,7 +71,8 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     
 
     /** the list contains plugins specific macros */
-    private List<String> _listPluginsMacros = new ArrayList<>( );
+    private List<String> _listPluginsIncludes = new ArrayList<>( );
+    private Map<String, String> _listPluginsImports = new HashMap<>( );
     private Map<String, Object> _mapSharedVariables = new HashMap<>( );
     private Map<String, Configuration> _mapConfigurations = new HashMap<>( );
     private String _strDefaultPath;
@@ -94,7 +95,25 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public void addPluginMacros( String strFileName )
     {
-        _listPluginsMacros.add( strFileName );
+        _listPluginsIncludes.add( strFileName );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addPluginInclude( String strFileName )
+    {
+        _listPluginsIncludes.add( strFileName );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addPluginImport( String strNamespace, String strFileName )
+    {
+        _listPluginsImports.put( strNamespace, strFileName );
     }
 
     /**
@@ -282,7 +301,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         Configuration cfg =  new Configuration( version );
 
         // add core and plugin auto-includes such as macros
-        for ( String strFileName : _listPluginsMacros )
+        for ( String strFileName : _listPluginsIncludes )
         {
             cfg.addAutoInclude( strFileName );
         }
@@ -388,6 +407,46 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         if ( cfg != null )
         {
             cfg.removeAutoInclude( strFile );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String,String> getAutoImports( )
+    {
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
+        if ( cfg == null )
+        {
+            cfg = initConfig( _strDefaultPath, Locale.getDefault( ) );
+        }
+        return cfg.getAutoImports( );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addAutoImport( String strNamespace, String strFile )
+    {
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
+        if ( cfg != null )
+        {
+            cfg.addAutoImport( strNamespace, strFile );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeAutoImport( String strNamespace )
+    {
+        Configuration cfg = _mapConfigurations.get( _strDefaultPath );
+        if ( cfg != null )
+        {
+            cfg.removeAutoImport( strNamespace );
         }
     }
     
