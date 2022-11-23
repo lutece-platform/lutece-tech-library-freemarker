@@ -35,6 +35,7 @@ package fr.paris.lutece.portal.service.template;
 
 import fr.paris.lutece.util.html.HtmlTemplate;
 import java.util.List;
+import java.util.Map;
 
 import java.util.Locale;
 
@@ -77,7 +78,26 @@ public interface IFreeMarkerTemplateService
      * @param strFileName
      *            the filename
      */
+    @Deprecated
     void addPluginMacros( String strFileName );
+
+    /**
+     * Adds a macro file (like the main commons.html) brought by a plugin. This file will be included for every template (auto-include).
+     * 
+     * @param strFileName
+     *            the filename
+     */
+    void addPluginAutoInclude( String strFileName );
+
+    /**
+     * Adds an import file brought by a plugin. This file will be imported for every template (auto-import).
+     * 
+     * @param strNamespace
+     *            The namespace corresponding to the import file
+     * @param strFileName
+     *            the filename
+     */
+    void addPluginAutoImport( String strNamespace, String strFileName );
 
     /**
      * Add a shared variable into every template
@@ -196,4 +216,29 @@ public interface IFreeMarkerTemplateService
      *            The file to remove
      */
     void removeAutoInclude( String strFile );
+
+    /**
+     * Get the list of auto imports files
+     * 
+     * @return The list or null if no configuration is available
+     */
+    Map<String,String> getAutoImports(  );
+
+    /**
+     * Add an auto import file
+     * 
+     * @param strNamespace
+     *            The namespace corresponding to the import file
+     * @param strFile
+     *            The file to add
+     */
+    void addAutoImport( String strNamespace, String strFile );
+
+    /**
+     * Remove an auto import file
+     * 
+     * @param strNamespace
+     *            The namespace corresponding to the import file to remove
+     */
+    void removeAutoImport( String strNamespace );
 }
