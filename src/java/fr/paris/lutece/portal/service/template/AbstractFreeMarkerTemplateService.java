@@ -52,10 +52,12 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import freemarker.ext.jakarta.servlet.WebappTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
+import jakarta.servlet.ServletContext;
 
 /**
  *
@@ -77,7 +79,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private String _strDefaultPath;
     private int _nTemplateUpdateDelay;
     private boolean _bAcceptIncompatibleImprovements;
-    
+    private ServletContext _context;
 
     /**
      * {@inheritDoc}
@@ -87,7 +89,6 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     {
         _nTemplateUpdateDelay = nTemplateUpdateDelay;
     }
-
     /**
      * {@inheritDoc}
      */
@@ -112,6 +113,16 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public void init( String strTemplatePath )
     {
+        _strDefaultPath = strTemplatePath;
+        _bAcceptIncompatibleImprovements = false;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init( String strTemplatePath, ServletContext context )
+    {
+    	_context= context;
         _strDefaultPath = strTemplatePath;
         _bAcceptIncompatibleImprovements = false;
     }
@@ -244,23 +255,29 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         try
         {
             Configuration cfg = buildConfiguration( locale );
-            // set the root directory for template loading
-            File directory = new File( this.getAbsolutePathFromRelativePath( strPath ) );
-            FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
-            StringTemplateLoader stringLoader = new StringTemplateLoader( );
-
-            TemplateLoader [ ] loaders = new TemplateLoader [ ] {
-                    ftl1, stringLoader
-            };
-            
+                 StringTemplateLoader stringLoader = new StringTemplateLoader( );
+            TemplateLoader [ ] loaders ;
+            if( _context != null ) {
+               TemplateLoader ftlWebapp = new WebappTemplateLoader( _context , strPath );
+                loaders = new TemplateLoader [ ] {
+                		ftlWebapp,  stringLoader
+               };
+            }else {
+            	  // set the root directory for template loading
+                   File directory = new File(  this.getAbsolutePathFromRelativePath( strPath )  );
+                   FileTemplateLoader ftl1 = new FileTemplateLoader( directory );
+          
+            	loaders = new TemplateLoader [ ] {
+                		  ftl1, stringLoader
+                };
+            }
+           
             MultiTemplateLoader mtl = new MultiTemplateLoader( loaders );
-            cfg.setTemplateLoader( mtl );
-            
-            
+            cfg.setTemplateLoader( mtl );          
             _mapConfigurations.put( strPath, cfg );
             return cfg;
         }
-        catch( IOException | TemplateException e )
+        catch( TemplateException | IOException e )
         {
             throw new LuteceFreemarkerException( e.getMessage( ), e );
         }

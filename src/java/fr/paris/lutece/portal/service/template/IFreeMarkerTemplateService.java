@@ -34,6 +34,8 @@
 package fr.paris.lutece.portal.service.template;
 
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.servlet.ServletContext;
+
 import java.util.List;
 
 import java.util.Locale;
@@ -94,8 +96,16 @@ public interface IFreeMarkerTemplateService
      * 
      * @param strTemplatePath
      *            The template path
+     *@deprected use {@link #init(String, ServletContext)}
      */
-    void init( String strTemplatePath );
+    @Deprecated
+    void init( String strTemplatePath);
+    /**
+     * Initializes the service with the templates's path and servletContext
+     * @param strTemplatePath  The template path
+     * @param context The servlet context
+     */
+    void init( String strTemplatePath, ServletContext context );
 
     /**
      * Initializes the service with the templates's path

@@ -36,6 +36,10 @@
 package fr.paris.lutece.portal.service.template;
 
 import fr.paris.lutece.util.html.HtmlTemplate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,8 +47,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * AbstractFreeMarkerTemplateService Test
@@ -122,12 +126,12 @@ public class AbstractFreeMarkerTemplateServiceTest
         Map<String, Object> model = new HashMap<>();
         model.put( MARK_VALUE , VALUE_TEST );
         String strTemplate = FileUtils.readFileToString( new File(PATH_TEMPLATES + FILE_TEMPLATE_2 ));
-        HtmlTemplate result = instance.loadTemplate( strTemplate , locale , model );
+        HtmlTemplate result = instance.loadTemplateFromStringFtl( strTemplate , locale , model );
         String strExpected = FileUtils.readFileToString( new File(PATH_TEMPLATES + EXPECTED_2 ));
         assertEquals( strExpected, result.getHtml() );
         
         instance = getInstance( true );
-        result = instance.loadTemplate( strTemplate , locale , model );
+        result = instance.loadTemplateFromStringFtl( strTemplate , locale , model );
         assertEquals( strExpected, result.getHtml() );
     }
 
@@ -205,6 +209,7 @@ public class AbstractFreeMarkerTemplateServiceTest
         instance.removeAutoInclude( FILE_AUTO_INCLUDE_WITH_INCLUDE );
         
         list = instance.getAutoIncludes();
+       
         assertTrue( list.isEmpty() );
 
     }
@@ -231,7 +236,6 @@ public class AbstractFreeMarkerTemplateServiceTest
         }
     }
     
-
     /**
      * Test of setSharedVariable method, of class AbstractFreeMarkerTemplateService.
      */
