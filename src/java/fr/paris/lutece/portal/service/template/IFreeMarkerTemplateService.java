@@ -84,22 +84,22 @@ public interface IFreeMarkerTemplateService
     void addPluginMacros( String strFileName );
 
     /**
-     * Adds a macro file (like the main commons.html) brought by a plugin. This file will be included for every template (autoinclude).
+     * Adds a macro file (like the main commons.html) brought by a plugin. This file will be included for every template (auto-include).
      * 
      * @param strFileName
      *            the filename
      */
-    void addPluginInclude( String strFileName );
+    void addPluginAutoInclude( String strFileName );
 
     /**
-     * Adds an import file brought by a plugin. This file will be imported for every template (autoimport).
+     * Adds an import file brought by a plugin. This file will be imported for every template (auto-import).
      * 
      * @param strNamespace
      *            The namespace corresponding to the import file
      * @param strFileName
      *            the filename
      */
-    void addPluginImport( String strNamespace, String strFileName );
+    void addPluginAutoImport( String strNamespace, String strFileName );
 
     /**
      * Add a shared variable into every template

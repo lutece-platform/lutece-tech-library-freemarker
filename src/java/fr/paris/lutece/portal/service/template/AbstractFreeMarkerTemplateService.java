@@ -73,8 +73,8 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     
 
     /** the list contains plugins specific macros */
-    private List<String> _listPluginsIncludes = new ArrayList<>( );
-    private Map<String, String> _listPluginsImports = new HashMap<>( );
+    private List<String> _listPluginsAutoIncludes = new ArrayList<>( );
+    private Map<String, String> _mapPluginsAutoImports = new HashMap<>( );
     private Map<String, Object> _mapSharedVariables = new HashMap<>( );
     private Map<String, Configuration> _mapConfigurations = new HashMap<>( );
     private String _strDefaultPath;
@@ -96,25 +96,25 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     @Override
     public void addPluginMacros( String strFileName )
     {
-        _listPluginsIncludes.add( strFileName );
+        _listPluginsAutoIncludes.add( strFileName );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addPluginInclude( String strFileName )
+    public void addPluginAutoInclude( String strFileName )
     {
-        _listPluginsIncludes.add( strFileName );
+        _listPluginsAutoIncludes.add( strFileName );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addPluginImport( String strNamespace, String strFileName )
+    public void addPluginAutoImport( String strNamespace, String strFileName )
     {
-        _listPluginsImports.put( strNamespace, strFileName );
+        _mapPluginsAutoImports.put( strNamespace, strFileName );
     }
 
     /**
@@ -318,15 +318,24 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         Configuration cfg =  new Configuration( version );
 
         // add core and plugin auto-includes such as macros
-        for ( String strFileName : _listPluginsIncludes )
+        for ( String strFileName : _listPluginsAutoIncludes )
         {
             cfg.addAutoInclude( strFileName );
+        }
+
+        // add core and plugin auto-imports
+        for ( Map.Entry<String, String> importEntry : _mapPluginsAutoImports.entrySet( ) )
+        {
+            cfg.addAutoImport( importEntry.getKey( ), importEntry.getValue( ) );
         }
 
         for ( Entry<String, Object> entry : _mapSharedVariables.entrySet( ) )
         {
             cfg.setSharedVariable( entry.getKey( ), entry.getValue( ) );
         }
+
+        // activate lazy auto-imports to automatically import just really used templates 
+        cfg.setLazyAutoImports( true );
 
         // disable the localized look-up process to find a template
         cfg.setLocalizedLookup( false );
