@@ -122,12 +122,12 @@ public class AbstractFreeMarkerTemplateServiceTest
         Map<String, Object> model = new HashMap<>();
         model.put( MARK_VALUE , VALUE_TEST );
         String strTemplate = FileUtils.readFileToString( new File(PATH_TEMPLATES + FILE_TEMPLATE_2 ));
-        HtmlTemplate result = instance.loadTemplate( strTemplate , locale , model );
+        HtmlTemplate result = instance.loadTemplateFromStringFtl( strTemplate , locale , model );
         String strExpected = FileUtils.readFileToString( new File(PATH_TEMPLATES + EXPECTED_2 ));
         assertEquals( strExpected, result.getHtml() );
         
         instance = getInstance( true );
-        result = instance.loadTemplate( strTemplate , locale , model );
+        result = instance.loadTemplateFromStringFtl( strTemplate , locale , model );
         assertEquals( strExpected, result.getHtml() );
     }
 
