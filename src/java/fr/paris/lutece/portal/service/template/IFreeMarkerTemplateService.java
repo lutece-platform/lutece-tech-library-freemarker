@@ -236,9 +236,23 @@ public interface IFreeMarkerTemplateService
 
     /**
      * Remove an auto import file
-     * 
+     *
      * @param strNamespace
      *            The namespace corresponding to the import file to remove
      */
     void removeAutoImport( String strNamespace );
+
+    /**
+     * Enable or disable HTML auto-escaping for all template output.
+     * When enabled, all interpolations (${...}) are automatically HTML-escaped
+     * unless explicitly marked with ?no_esc. This provides defense-in-depth
+     * against stored XSS vulnerabilities.
+     *
+     * @param bAutoEscapingEnabled
+     *            true to enable HTML auto-escaping, false to disable
+     */
+    default void setAutoEscapingEnabled( boolean bAutoEscapingEnabled )
+    {
+        // Default implementation does nothing for backward compatibility
+    }
 }

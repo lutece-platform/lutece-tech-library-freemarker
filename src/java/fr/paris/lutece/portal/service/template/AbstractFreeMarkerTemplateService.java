@@ -52,6 +52,7 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import freemarker.core.HTMLOutputFormat;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -78,6 +79,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private String _strDefaultPath;
     private int _nTemplateUpdateDelay;
     private boolean _bAcceptIncompatibleImprovements;
+    private boolean _bAutoEscapingEnabled;
     
 
     /**
@@ -123,6 +125,15 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     public void setSharedVariable( String name, Object obj )
     {
         _mapSharedVariables.put( name, obj );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAutoEscapingEnabled( boolean bAutoEscapingEnabled )
+    {
+        _bAutoEscapingEnabled = bAutoEscapingEnabled;
     }
 
     /**
@@ -331,6 +342,14 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
         // Time in seconds that must elapse before checking whether there is a newer version of a template file
         cfg.setTemplateUpdateDelayMilliseconds( ( ( long ) _nTemplateUpdateDelay ) * 1000L );
+
+        // Enable HTML auto-escaping if configured. When enabled, all ${...} interpolations
+        // are automatically HTML-escaped. Templates that need raw HTML output must use ?no_esc.
+        if ( _bAutoEscapingEnabled )
+        {
+            cfg.setOutputFormat( HTMLOutputFormat.INSTANCE );
+        }
+
         return cfg;
     }
 
