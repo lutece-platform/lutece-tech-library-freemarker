@@ -52,6 +52,7 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import freemarker.core.HTMLOutputFormat;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -322,6 +323,10 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
         // disable the localized look-up process to find a template
         cfg.setLocalizedLookup( false );
+
+        // enable HTML auto-escaping by default to prevent XSS vulnerabilities
+        cfg.setOutputFormat( HTMLOutputFormat.INSTANCE );
+        cfg.setAutoEscapingPolicy( Configuration.ENABLE_IF_DEFAULT_AUTO_ESCAPING_POLICY );
 
         // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
         cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
