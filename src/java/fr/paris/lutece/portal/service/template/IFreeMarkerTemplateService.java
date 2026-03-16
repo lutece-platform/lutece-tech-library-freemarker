@@ -73,6 +73,14 @@ public interface IFreeMarkerTemplateService
     void setTemplateUpdateDelay( int nTemplateUpdateDelay );
 
     /**
+     * Set the template autoescaping
+     * 
+     * @param bTemplateAutoEscape
+     *            true to enable autoescaping
+     */
+    void setTemplateAutoEscape( boolean bTemplateAutoEscape );
+
+    /**
      * Adds a macro file (like the main commons.html) brought by a plugin. This file will be included for every template (autoinclude).
      * 
      * @param strFileName
