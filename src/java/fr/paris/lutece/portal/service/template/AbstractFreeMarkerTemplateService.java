@@ -54,6 +54,7 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.ext.jakarta.servlet.WebappTemplateLoader;
 import freemarker.core.HTMLOutputFormat;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -328,6 +329,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     {
         Version version = ( _bAcceptIncompatibleImprovements ) ? Configuration.VERSION_2_3_28 : Configuration.VERSION_2_3_0;
         Configuration cfg =  new Configuration( version );
+        cfg.setNewBuiltinClassResolver( TemplateClassResolver.SAFER_RESOLVER );
 
         // add core and plugin auto-includes such as macros
         for ( String strFileName : _listPluginsAutoIncludes )
