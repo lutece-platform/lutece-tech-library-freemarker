@@ -329,7 +329,11 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     {
         Version version = ( _bAcceptIncompatibleImprovements ) ? Configuration.VERSION_2_3_28 : Configuration.VERSION_2_3_0;
         Configuration cfg =  new Configuration( version );
-        cfg.setNewBuiltinClassResolver( TemplateClassResolver.SAFER_RESOLVER );
+        // Security hardening (SSTI): forbid ANY class instantiation via the ?new built-in
+        // (deny-all is safer than the SAFER_RESOLVER deny-list) and explicitly disable the
+        // ?api built-in to prevent reaching the raw Java API / reflection from templates.
+        cfg.setNewBuiltinClassResolver( TemplateClassResolver.ALLOWS_NOTHING_RESOLVER );
+        cfg.setAPIBuiltinEnabled( false );
 
         // add core and plugin auto-includes such as macros
         for ( String strFileName : _listPluginsAutoIncludes )
