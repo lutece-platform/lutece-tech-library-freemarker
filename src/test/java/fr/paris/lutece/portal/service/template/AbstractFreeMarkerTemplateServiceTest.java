@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
+import java.nio.file.Files;
 import org.junit.jupiter.api.Test;
 
 
@@ -83,7 +83,7 @@ public class AbstractFreeMarkerTemplateServiceTest
         
         AbstractFreeMarkerTemplateService instance = getInstance( false );
         HtmlTemplate result = instance.loadTemplate( PATH_TEMPLATES , FILE_TEMPLATE_1 );
-        String strExpected = FileUtils.readFileToString( new File(PATH_TEMPLATES + EXPECTED_1 ));
+        String strExpected = Files.readString( new File( PATH_TEMPLATES + EXPECTED_1 ).toPath( ) );
         assertEquals( strExpected, result.getHtml() );
                
         instance = getInstance( true );
@@ -104,7 +104,7 @@ public class AbstractFreeMarkerTemplateServiceTest
         Map<String, Object> model = new HashMap<>();
         model.put( MARK_VALUE , VALUE_TEST );
         HtmlTemplate result = instance.loadTemplate( PATH_TEMPLATES, FILE_TEMPLATE_2 , locale , model );
-        String strExpected = FileUtils.readFileToString( new File(PATH_TEMPLATES + EXPECTED_2 ));
+        String strExpected = Files.readString( new File( PATH_TEMPLATES + EXPECTED_2 ).toPath( ) );
         assertEquals( strExpected, result.getHtml() );
                 
         instance = getInstance( true );
@@ -125,9 +125,9 @@ public class AbstractFreeMarkerTemplateServiceTest
         Locale locale = Locale.US;
         Map<String, Object> model = new HashMap<>();
         model.put( MARK_VALUE , VALUE_TEST );
-        String strTemplate = FileUtils.readFileToString( new File(PATH_TEMPLATES + FILE_TEMPLATE_2 ));
+        String strTemplate = Files.readString( new File( PATH_TEMPLATES + FILE_TEMPLATE_2 ).toPath( ) );
         HtmlTemplate result = instance.loadTemplateFromStringFtl( strTemplate , locale , model );
-        String strExpected = FileUtils.readFileToString( new File(PATH_TEMPLATES + EXPECTED_2 ));
+        String strExpected = Files.readString( new File( PATH_TEMPLATES + EXPECTED_2 ).toPath( ) );
         assertEquals( strExpected, result.getHtml() );
         
         instance = getInstance( true );
@@ -175,7 +175,7 @@ public class AbstractFreeMarkerTemplateServiceTest
         assertTrue( list.size() == 1 );
 
         HtmlTemplate result = instance.loadTemplate( PATH_TEMPLATES, FILE_TEMPLATE_3 );
-        String strExpected = FileUtils.readFileToString( new File( PATH_TEMPLATES + EXPECTED_3 ));
+        String strExpected = Files.readString( new File( PATH_TEMPLATES + EXPECTED_3 ).toPath( ) );
         assertEquals( strExpected, result.getHtml() );
         
         instance.removeAutoInclude( FILE_AUTO_INCLUDE );
@@ -203,7 +203,7 @@ public class AbstractFreeMarkerTemplateServiceTest
         assertTrue( list.size() == 1 );
 
         HtmlTemplate result = instance.loadTemplate(PATH_TEMPLATES, FILE_TEMPLATE_4 );
-        String strExpected = FileUtils.readFileToString(new File( PATH_TEMPLATES + EXPECTED_4 ));
+        String strExpected = Files.readString( new File( PATH_TEMPLATES + EXPECTED_4 ).toPath( ) );
         assertEquals( strExpected, result.getHtml() );
         
         instance.removeAutoInclude( FILE_AUTO_INCLUDE_WITH_INCLUDE );
