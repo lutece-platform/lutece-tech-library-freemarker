@@ -61,6 +61,8 @@ public class AbstractFreeMarkerTemplateServiceTest
     private static final String FILE_TEMPLATE_3 = "template3.html";
     private static final String FILE_TEMPLATE_4 = "template4.html";
     private static final String FILE_AUTO_INCLUDE = "auto_include.html";
+    private static final String FILE_TEMPLATE_ESCAPING_HTML = "escaping.html";
+    private static final String FILE_TEMPLATE_ESCAPING_JS = "escaping.js";
     private static final String FILE_AUTO_INCLUDE_WITH_INCLUDE = "auto_include_with_include.html";
     private static final String EXPECTED_1 = "expected1.html";
     private static final String EXPECTED_2 = "expected2.html";
@@ -251,6 +253,26 @@ public class AbstractFreeMarkerTemplateServiceTest
     
     
     
+    /**
+     * With HTML auto-escaping, an HTML template escapes the values it writes, while a JavaScript template writes them as
+     * is: it escapes its strings itself with ?js_string.
+     */
+    @Test
+    public void testAutoEscapingByTemplateType( )
+    {
+        AbstractFreeMarkerTemplateService instance = new AbstractFreeMarkerTemplateServiceImpl( );
+        instance.setTemplateAutoEscape( true );
+        instance.init( PATH_TEMPLATES, true );
+        Map<String, Object> model = new HashMap<>( );
+        model.put( MARK_VALUE, "a&b'c" );
+
+        HtmlTemplate html = instance.loadTemplate( PATH_TEMPLATES, FILE_TEMPLATE_ESCAPING_HTML, Locale.FRANCE, model );
+        HtmlTemplate js = instance.loadTemplate( PATH_TEMPLATES, FILE_TEMPLATE_ESCAPING_JS, Locale.FRANCE, model );
+
+        assertEquals( "<p>a&amp;b&#39;c</p>", html.getHtml( ).trim( ) );
+        assertEquals( "var url = 'a&b\\'c';", js.getHtml( ).trim( ) );
+    }
+
     /**
      * Initialize an instance of the service
      * @param bAcceptIncompatibleImprovements
