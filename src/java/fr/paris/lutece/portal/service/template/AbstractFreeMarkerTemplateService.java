@@ -53,7 +53,16 @@ import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.ext.jakarta.servlet.WebappTemplateLoader;
+import freemarker.cache.ConditionalTemplateConfigurationFactory;
+import freemarker.cache.FileExtensionMatcher;
+import freemarker.cache.FirstMatchTemplateConfigurationFactory;
+import freemarker.cache.TemplateConfigurationFactory;
+import freemarker.core.CSSOutputFormat;
 import freemarker.core.HTMLOutputFormat;
+import freemarker.core.JSONOutputFormat;
+import freemarker.core.JavaScriptOutputFormat;
+import freemarker.core.OutputFormat;
+import freemarker.core.TemplateConfiguration;
 import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -363,6 +372,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         {
             cfg.setOutputFormat( HTMLOutputFormat.INSTANCE );
             cfg.setAutoEscapingPolicy( Configuration.ENABLE_IF_DEFAULT_AUTO_ESCAPING_POLICY );
+            cfg.setTemplateConfigurations( buildNonHtmlTemplateConfigurations( ) );
         }
 
         // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
@@ -374,6 +384,37 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
         // Time in seconds that must elapse before checking whether there is a newer version of a template file
         cfg.setTemplateUpdateDelayMilliseconds( ( ( long ) _nTemplateUpdateDelay ) * 1000L );
         return cfg;
+    }
+
+    /**
+     * Gives the templates that do not produce HTML the output format of what they produce. HTML auto-escaping would
+     * corrupt them: a JavaScript (.js), JSON (.json) or CSS (.css) template is written as is, as it was before
+     * auto-escaping, and escapes the values it writes in its strings itself (?js_string, ?json_string).
+     *
+     * @return the template configurations, by file extension
+     */
+    private static TemplateConfigurationFactory buildNonHtmlTemplateConfigurations( )
+    {
+        return new FirstMatchTemplateConfigurationFactory(
+                new ConditionalTemplateConfigurationFactory( new FileExtensionMatcher( "js" ), withOutputFormat( JavaScriptOutputFormat.INSTANCE ) ),
+                new ConditionalTemplateConfigurationFactory( new FileExtensionMatcher( "json" ), withOutputFormat( JSONOutputFormat.INSTANCE ) ),
+                new ConditionalTemplateConfigurationFactory( new FileExtensionMatcher( "css" ), withOutputFormat( CSSOutputFormat.INSTANCE ) ) )
+                .allowNoMatch( true );
+    }
+
+    /**
+     * Builds a template configuration setting an output format.
+     *
+     * @param outputFormat
+     *            the output format
+     * @return the template configuration
+     */
+    private static TemplateConfiguration withOutputFormat( OutputFormat outputFormat )
+    {
+        TemplateConfiguration templateConfiguration = new TemplateConfiguration( );
+        templateConfiguration.setOutputFormat( outputFormat );
+
+        return templateConfiguration;
     }
 
     /**
