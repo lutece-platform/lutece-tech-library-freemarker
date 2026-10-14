@@ -80,6 +80,8 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private static final String NUMBER_FORMAT_PATTERN = "0.######";
     private static final String SETTING_DATE_FORMAT = "date_format";
     private static final String CONSTANT_HASH_ENCODING = "UTF-8";
+    /** charset of ?url, which percent-encodes a value written in a URL (it fails when no charset is set) */
+    private static final String URL_ESCAPING_CHARSET = "UTF-8";
     private static final String CONSTANT_HASH_DIGEST = "MD5";
     
 
@@ -377,6 +379,7 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
 
         // keep control localized number formating (can cause pb on ids, and we don't want to use the ?c directive all the time)
         cfg.setNumberFormat( NUMBER_FORMAT_PATTERN );
+        cfg.setURLEscapingCharset( URL_ESCAPING_CHARSET );
 
         // Used to set the default format to display a date and datetime
         cfg.setSetting( SETTING_DATE_FORMAT, this.getDefaultPattern( locale ) );
