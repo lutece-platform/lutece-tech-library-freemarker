@@ -274,6 +274,21 @@ public class AbstractFreeMarkerTemplateServiceTest
     }
 
     /**
+     * ?url percent-encodes a value written in a URL, in UTF-8.
+     */
+    @Test
+    public void testUrlEscaping( )
+    {
+        AbstractFreeMarkerTemplateService instance = getInstance( true );
+        Map<String, Object> model = new HashMap<>( );
+        model.put( MARK_VALUE, "a&b=c d#é" );
+
+        HtmlTemplate result = instance.loadTemplateFromStringFtl( "${value?url}", Locale.FRANCE, model );
+
+        assertEquals( "a%26b%3Dc%20d%23%C3%A9", result.getHtml( ) );
+    }
+
+    /**
      * Initialize an instance of the service
      * @param bAcceptIncompatibleImprovements
      * @return 
