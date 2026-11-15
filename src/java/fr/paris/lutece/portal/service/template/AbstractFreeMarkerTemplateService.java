@@ -77,6 +77,11 @@ import jakarta.servlet.ServletContext;
  */
 public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTemplateService
 {
+    /**
+     * FreeMarker "incompatible improvements" level of every configuration (and of its default object wrapper, which
+     * follows it as long as no other object wrapper is set): the FreeMarker version of the library
+     */
+    private static final Version INCOMPATIBLE_IMPROVEMENTS = Configuration.VERSION_2_3_35;
     private static final String NUMBER_FORMAT_PATTERN = "0.######";
     private static final String SETTING_DATE_FORMAT = "date_format";
     private static final String CONSTANT_HASH_ENCODING = "UTF-8";
@@ -92,7 +97,6 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     private Map<String, Configuration> _mapConfigurations = new HashMap<>( );
     private String _strDefaultPath;
     private int _nTemplateUpdateDelay;
-    private boolean _bAcceptIncompatibleImprovements;
     private boolean _bTemplateAutoEscape;
     private ServletContext _context;
 
@@ -157,7 +161,6 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     public void init( String strTemplatePath )
     {
         _strDefaultPath = strTemplatePath;
-        _bAcceptIncompatibleImprovements = false;
     }
     /**
      * {@inheritDoc}
@@ -167,17 +170,18 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
     {
     	_context= context;
         _strDefaultPath = strTemplatePath;
-        _bAcceptIncompatibleImprovements = false;
     }
 
     /**
      * {@inheritDoc}
+     * <p>
+     * The flag is ignored: the templates are always processed at the incompatible improvements level of the FreeMarker
+     * version of the library (2.3.35).
      */
     @Override
     public void init( String strTemplatePath, boolean bAcceptIncompatibleImprovements )
     {
         _strDefaultPath = strTemplatePath;
-        _bAcceptIncompatibleImprovements = bAcceptIncompatibleImprovements;
     }
 
     /**
@@ -338,8 +342,8 @@ public abstract class AbstractFreeMarkerTemplateService implements IFreeMarkerTe
      */
     private Configuration buildConfiguration( Locale locale ) throws TemplateException
     {
-        Version version = ( _bAcceptIncompatibleImprovements ) ? Configuration.VERSION_2_3_28 : Configuration.VERSION_2_3_0;
-        Configuration cfg =  new Configuration( version );
+        // the default object wrapper (no other one is set) takes the same incompatible improvements level
+        Configuration cfg = new Configuration( INCOMPATIBLE_IMPROVEMENTS );
         // Security hardening (SSTI): forbid ANY class instantiation via the ?new built-in
         // (deny-all is safer than the SAFER_RESOLVER deny-list) and explicitly disable the
         // ?api built-in to prevent reaching the raw Java API / reflection from templates.

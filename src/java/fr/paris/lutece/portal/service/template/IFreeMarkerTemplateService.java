@@ -141,7 +141,9 @@ public interface IFreeMarkerTemplateService
      * @param strTemplatePath
      *            The template path
      * @param bAcceptIncompatibleImprovements
-     *            Use Freemarker new features or stay backward compatible
+     *            Ignored, kept for compatibility: it no longer lowers the FreeMarker incompatible improvements level,
+     *            the templates are always processed at the level of the FreeMarker version of the library (2.3.35),
+     *            whatever its value
      */
     void init( String strTemplatePath, boolean bAcceptIncompatibleImprovements );
 

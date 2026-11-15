@@ -289,6 +289,42 @@ public class AbstractFreeMarkerTemplateServiceTest
     }
 
     /**
+     * The templates are processed at the incompatible improvements level 2.3.35, whatever the flag of init, and so is
+     * the object wrapper: a Boolean isXxx( ) method is a property (2.3.35) and ?c formats a decimal losslessly (2.3.32).
+     */
+    @Test
+    public void testIncompatibleImprovementsLevel( )
+    {
+        Map<String, Object> model = new HashMap<>( );
+        model.put( MARK_VALUE, 0.1d + 0.2d );
+        model.put( "bean", new BeanWithBooleanIs( ) );
+        String strTemplate = "${value?c} ${bean.expired?c}";
+
+        for ( boolean bAcceptIncompatibleImprovements : new boolean [ ] { false, true } )
+        {
+            HtmlTemplate result = getInstance( bAcceptIncompatibleImprovements ).loadTemplateFromStringFtl( strTemplate, Locale.FRANCE, model );
+            assertEquals( "0.30000000000000004 true", result.getHtml( ) );
+        }
+        AbstractFreeMarkerTemplateService instance = new AbstractFreeMarkerTemplateServiceImpl( );
+        instance.init( PATH_TEMPLATES );
+        assertEquals( "0.30000000000000004 true", instance.loadTemplateFromStringFtl( strTemplate, Locale.FRANCE, model ).getHtml( ) );
+    }
+
+    /**
+     * A bean whose isXxx( ) method returns a Boolean object
+     */
+    public static class BeanWithBooleanIs
+    {
+        /**
+         * @return true
+         */
+        public Boolean isExpired( )
+        {
+            return Boolean.TRUE;
+        }
+    }
+
+    /**
      * Initialize an instance of the service
      * @param bAcceptIncompatibleImprovements
      * @return 
